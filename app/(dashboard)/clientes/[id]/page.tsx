@@ -103,41 +103,50 @@ export default function ClienteDetalhesPage() {
 
   const handleSaveVehicle = async () => {
     try {
-      const vehicleData = {
-        client_id: clientId,
-        placa: vehicleForm.placa.toUpperCase().replace(/[^A-Z0-9]/g, ''),
-        modelo: vehicleForm.modelo,
-        marca: vehicleForm.marca || null,
-        ano: vehicleForm.ano ? parseInt(vehicleForm.ano) : null,
-        imei_rastreador: vehicleForm.imei_rastreador.replace(/\D/g, ''),
-        chip_numero: vehicleForm.chip_numero,
-        operadora_chip: vehicleForm.operadora_chip || null,
-        observacoes: vehicleForm.observacoes || null,
-      }
+      const placa = vehicleForm.placa.toUpperCase().replace(/[^A-Z0-9]/g, '')
+      const imei = vehicleForm.imei_rastreador.replace(/\D/g, '')
 
       // Validações
-      if (vehicleData.placa.length !== 7) {
+      if (placa.length !== 7) {
         alert('Placa deve ter 7 caracteres')
         return
       }
 
-      if (vehicleData.imei_rastreador.length !== 15) {
+      if (imei.length !== 15) {
         alert('IMEI deve ter 15 dígitos')
         return
       }
 
       if (editingVehicle) {
-        // Editar - remover client_id do update
-        const { client_id, ...updateData } = vehicleData
+        // Editar
         const { error } = await supabase
           .from('vehicles')
-          .update(updateData as any)
+          .update({
+            placa,
+            modelo: vehicleForm.modelo,
+            marca: vehicleForm.marca || null,
+            ano: vehicleForm.ano ? parseInt(vehicleForm.ano) : null,
+            imei_rastreador: imei,
+            chip_numero: vehicleForm.chip_numero,
+            operadora_chip: vehicleForm.operadora_chip || null,
+            observacoes: vehicleForm.observacoes || null,
+          })
           .eq('id', editingVehicle.id)
 
         if (error) throw error
       } else {
         // Criar novo
-        const { error } = await supabase.from('vehicles').insert(vehicleData as any)
+        const { error } = await supabase.from('vehicles').insert({
+          client_id: clientId,
+          placa,
+          modelo: vehicleForm.modelo,
+          marca: vehicleForm.marca || null,
+          ano: vehicleForm.ano ? parseInt(vehicleForm.ano) : null,
+          imei_rastreador: imei,
+          chip_numero: vehicleForm.chip_numero,
+          operadora_chip: vehicleForm.operadora_chip || null,
+          observacoes: vehicleForm.observacoes || null,
+        })
 
         if (error) throw error
       }
