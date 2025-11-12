@@ -119,6 +119,7 @@ export default function ClienteDetalhesPage() {
 
       if (editingVehicle) {
         // Editar
+        // @ts-ignore - Supabase type inference issue
         const { error } = await supabase
           .from('vehicles')
           .update({
@@ -136,6 +137,7 @@ export default function ClienteDetalhesPage() {
         if (error) throw error
       } else {
         // Criar novo
+        // @ts-ignore - Supabase type inference issue
         const { error } = await supabase.from('vehicles').insert({
           client_id: clientId,
           placa,
