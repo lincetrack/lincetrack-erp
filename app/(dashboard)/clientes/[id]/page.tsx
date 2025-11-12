@@ -127,10 +127,11 @@ export default function ClienteDetalhesPage() {
       }
 
       if (editingVehicle) {
-        // Editar
+        // Editar - remover client_id do update
+        const { client_id, ...updateData } = vehicleData
         const { error } = await supabase
           .from('vehicles')
-          .update(vehicleData)
+          .update(updateData)
           .eq('id', editingVehicle.id)
 
         if (error) throw error
