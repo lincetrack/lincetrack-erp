@@ -119,9 +119,9 @@ export default function ClienteDetalhesPage() {
 
       if (editingVehicle) {
         // Editar
-        // @ts-ignore - Supabase type inference issue
         const { error } = await supabase
           .from('vehicles')
+          // @ts-ignore - Supabase type inference issue
           .update({
             placa,
             modelo: vehicleForm.modelo,
