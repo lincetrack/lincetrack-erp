@@ -131,13 +131,13 @@ export default function ClienteDetalhesPage() {
         const { client_id, ...updateData } = vehicleData
         const { error } = await supabase
           .from('vehicles')
-          .update(updateData)
+          .update(updateData as any)
           .eq('id', editingVehicle.id)
 
         if (error) throw error
       } else {
         // Criar novo
-        const { error } = await supabase.from('vehicles').insert(vehicleData)
+        const { error } = await supabase.from('vehicles').insert(vehicleData as any)
 
         if (error) throw error
       }
