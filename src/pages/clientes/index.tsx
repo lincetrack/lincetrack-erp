@@ -760,7 +760,7 @@ export default function ClientesPage() {
                           onClick={() => {
                             setNewCliente({
                               ...newCliente,
-                              veiculos: newCliente.veiculos.filter(v => v.id !== veiculo.id)
+                              veiculos: (newCliente.veiculos || []).filter(v => v.id !== veiculo.id)
                             })
                           }}
                           className="text-red-600 hover:text-red-700 text-sm"
