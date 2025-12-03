@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 
@@ -11,26 +12,70 @@ const menuItems = [
 
 export default function Sidebar() {
   const router = useRouter()
+  const [isOpen, setIsOpen] = useState(false)
+
+  const toggleMenu = () => setIsOpen(!isOpen)
+  const closeMenu = () => setIsOpen(false)
 
   return (
-    <aside className="w-64 bg-white shadow-lg">
-      <div className="p-6">
-        <h1 className="text-2xl font-bold text-primary-600">Lince Track ERP</h1>
-      </div>
-      <nav className="mt-6">
-        {menuItems.map((item) => (
-          <Link
-            key={item.path}
-            href={item.path}
-            className={`flex items-center px-6 py-3 text-gray-700 hover:bg-primary-50 hover:text-primary-600 transition-colors ${
-              router.pathname === item.path ? 'bg-primary-50 text-primary-600 border-r-4 border-primary-600' : ''
-            }`}
-          >
-            <span className="mr-3 text-xl">{item.icon}</span>
-            <span className="font-medium">{item.name}</span>
-          </Link>
-        ))}
-      </nav>
-    </aside>
+    <>
+      {/* Botão Hamburger Mobile */}
+      <button
+        onClick={toggleMenu}
+        className="lg:hidden fixed top-4 left-4 z-50 p-2 bg-primary-600 text-white rounded-lg shadow-lg hover:bg-primary-700 transition-colors"
+        aria-label="Menu"
+      >
+        {isOpen ? (
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        ) : (
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        )}
+      </button>
+
+      {/* Overlay escuro para mobile */}
+      {isOpen && (
+        <div
+          className="lg:hidden fixed inset-0 bg-black/50 z-40"
+          onClick={closeMenu}
+        />
+      )}
+
+      {/* Sidebar */}
+      <aside className={`
+        fixed lg:static inset-y-0 left-0 z-40
+        w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out
+        ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
+      `}>
+        <div className="p-6 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <img
+              src="/logo-lince-track.svg"
+              alt="Lince Track Logo"
+              className="w-10 h-10 object-contain"
+            />
+            <h1 className="text-xl font-bold text-primary-600">Lince Track</h1>
+          </div>
+        </div>
+        <nav className="mt-6">
+          {menuItems.map((item) => (
+            <Link
+              key={item.path}
+              href={item.path}
+              onClick={closeMenu}
+              className={`flex items-center px-6 py-4 text-gray-700 hover:bg-primary-50 hover:text-primary-600 transition-colors ${
+                router.pathname === item.path ? 'bg-primary-50 text-primary-600 border-r-4 border-primary-600' : ''
+              }`}
+            >
+              <span className="mr-3 text-2xl">{item.icon}</span>
+              <span className="font-medium text-base">{item.name}</span>
+            </Link>
+          ))}
+        </nav>
+      </aside>
+    </>
   )
 }
