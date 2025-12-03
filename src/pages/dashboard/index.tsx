@@ -58,13 +58,13 @@ export default function DashboardPage() {
 
   return (
     <MainLayout>
-      <div className="space-y-6">
-        <div className="flex justify-between items-center">
-          <h1 className="text-3xl font-bold text-gray-800">Dashboard - Lince Track</h1>
-          <p className="text-sm text-gray-600 capitalize">{mesNome}</p>
+      <div className="space-y-4 md:space-y-6">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+          <h1 className="text-xl md:text-3xl font-bold text-gray-800">Dashboard</h1>
+          <p className="text-xs md:text-sm text-gray-600 capitalize">{mesNome}</p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
           <StatsCard
             title="Clientes Ativos"
             value={clientesAtivos.toString()}
