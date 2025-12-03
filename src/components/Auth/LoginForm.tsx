@@ -1,5 +1,6 @@
 import { useState, FormEvent } from 'react'
 import { useRouter } from 'next/router'
+import { supabase } from '@/lib/supabase'
 
 export default function LoginForm() {
   const router = useRouter()
@@ -13,23 +14,13 @@ export default function LoginForm() {
     setLoading(true)
     setError('')
 
-    // Autenticação temporária simples (localStorage)
-    // TODO: Integrar com Supabase quando estiver pronto
     try {
-      // Validação básica
-      if (!email || !password) {
-        throw new Error('Por favor, preencha todos os campos')
-      }
-
-      // Simula um delay de autenticação
-      await new Promise(resolve => setTimeout(resolve, 500))
-
-      // Salva sessão no localStorage
-      localStorage.setItem('lince-track-session', JSON.stringify({
+      const { error } = await supabase.auth.signInWithPassword({
         email,
-        loggedIn: true,
-        timestamp: new Date().toISOString()
-      }))
+        password,
+      })
+
+      if (error) throw error
 
       router.push('/dashboard')
     } catch (error: any) {
