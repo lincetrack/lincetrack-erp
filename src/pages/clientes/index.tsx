@@ -775,7 +775,7 @@ export default function ClientesPage() {
                             type="text"
                             value={veiculo.veiculo}
                             onChange={(e) => {
-                              const novosVeiculos = [...newCliente.veiculos]
+                              const novosVeiculos = [...(newCliente.veiculos || [])]
                               novosVeiculos[index] = { ...veiculo, veiculo: e.target.value }
                               setNewCliente({ ...newCliente, veiculos: novosVeiculos })
                             }}
@@ -789,7 +789,7 @@ export default function ClientesPage() {
                             type="text"
                             value={veiculo.placa}
                             onChange={(e) => {
-                              const novosVeiculos = [...newCliente.veiculos]
+                              const novosVeiculos = [...(newCliente.veiculos || [])]
                               novosVeiculos[index] = { ...veiculo, placa: e.target.value.toUpperCase() }
                               setNewCliente({ ...newCliente, veiculos: novosVeiculos })
                             }}
@@ -804,7 +804,7 @@ export default function ClientesPage() {
                             type="text"
                             value={veiculo.tipo_rastreador}
                             onChange={(e) => {
-                              const novosVeiculos = [...newCliente.veiculos]
+                              const novosVeiculos = [...(newCliente.veiculos || [])]
                               novosVeiculos[index] = { ...veiculo, tipo_rastreador: e.target.value }
                               setNewCliente({ ...newCliente, veiculos: novosVeiculos })
                             }}
@@ -818,7 +818,7 @@ export default function ClientesPage() {
                             type="text"
                             value={veiculo.imei}
                             onChange={(e) => {
-                              const novosVeiculos = [...newCliente.veiculos]
+                              const novosVeiculos = [...(newCliente.veiculos || [])]
                               novosVeiculos[index] = { ...veiculo, imei: e.target.value }
                               setNewCliente({ ...newCliente, veiculos: novosVeiculos })
                             }}
@@ -833,7 +833,7 @@ export default function ClientesPage() {
                             type="text"
                             value={veiculo.numero_chip}
                             onChange={(e) => {
-                              const novosVeiculos = [...newCliente.veiculos]
+                              const novosVeiculos = [...(newCliente.veiculos || [])]
                               novosVeiculos[index] = { ...veiculo, numero_chip: e.target.value }
                               setNewCliente({ ...newCliente, veiculos: novosVeiculos })
                             }}
@@ -847,7 +847,7 @@ export default function ClientesPage() {
                               type="checkbox"
                               checked={veiculo.com_bloqueio}
                               onChange={(e) => {
-                                const novosVeiculos = [...newCliente.veiculos]
+                                const novosVeiculos = [...(newCliente.veiculos || [])]
                                 novosVeiculos[index] = { ...veiculo, com_bloqueio: e.target.checked }
                                 setNewCliente({ ...newCliente, veiculos: novosVeiculos })
                               }}
