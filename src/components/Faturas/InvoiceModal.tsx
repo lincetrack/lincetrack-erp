@@ -15,17 +15,17 @@ export default function InvoiceModal({ invoice, customer, onClose }: InvoiceModa
   }
 
   return (
-    <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4 overflow-y-auto">
-      <div className="bg-white w-full max-w-3xl min-h-[800px] p-8 shadow-2xl relative text-sm font-sans text-gray-800">
+    <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-2 sm:p-4 overflow-y-auto">
+      <div className="bg-white w-full max-w-4xl max-h-[95vh] overflow-y-auto my-2 sm:my-4 p-4 sm:p-8 shadow-2xl relative text-xs sm:text-sm font-sans text-gray-800">
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 text-gray-500 hover:text-red-500 print:hidden text-2xl font-bold"
+          className="absolute top-2 right-2 sm:top-4 sm:right-4 text-gray-500 hover:text-red-500 print:hidden text-2xl font-bold z-10"
         >
           ✕
         </button>
 
         {/* HEADER */}
-        <div className="flex justify-between border-b-2 border-gray-800 pb-4 mb-4">
+        <div className="flex flex-col sm:flex-row justify-between gap-4 border-b-2 border-gray-800 pb-4 mb-4">
           <div className="flex items-center gap-4">
             <div className="w-28 h-20 flex items-center justify-center">
               <img
@@ -132,10 +132,10 @@ export default function InvoiceModal({ invoice, customer, onClose }: InvoiceModa
           <p className="mt-2 font-bold">{customer.cidade} - {customer.estado}, {new Date().toLocaleDateString('pt-BR')}</p>
         </div>
 
-        <div className="absolute bottom-4 right-4 print:hidden">
+        <div className="sticky bottom-0 bg-white border-t border-gray-300 p-3 sm:p-4 print:hidden mt-6">
           <button
             onClick={handlePrint}
-            className="bg-blue-600 text-white px-4 py-2 rounded flex items-center gap-2 hover:bg-blue-700"
+            className="w-full sm:w-auto bg-blue-600 text-white px-4 py-2 rounded flex items-center justify-center gap-2 hover:bg-blue-700 text-sm sm:text-base"
           >
             🖨️ Imprimir / Salvar PDF
           </button>
