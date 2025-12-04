@@ -2,6 +2,9 @@ import { useState, useEffect } from 'react'
 import MainLayout from '@/components/Layout/MainLayout'
 import { Cliente, Fatura, Despesa } from '@/types'
 import { formatCurrency, formatDate } from '@/utils/formatters'
+import { clienteService } from '@/services/clienteService'
+import { faturaService } from '@/services/faturaService'
+import { despesaService } from '@/services/despesaService'
 
 type ReportType = 'faturas' | 'despesas' | 'clientes' | 'financeiro'
 
@@ -12,15 +15,10 @@ export default function RelatoriosPage() {
   const [clientes, setClientes] = useState<Cliente[]>([])
   const [faturas, setFaturas] = useState<Fatura[]>([])
   const [despesas, setDespesas] = useState<Despesa[]>([])
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const clientesData = localStorage.getItem('clientes')
-    const faturasData = localStorage.getItem('faturas')
-    const despesasData = localStorage.getItem('despesas')
-
-    if (clientesData) setClientes(JSON.parse(clientesData))
-    if (faturasData) setFaturas(JSON.parse(faturasData))
-    if (despesasData) setDespesas(JSON.parse(despesasData))
+    loadData()
 
     const now = new Date()
     const firstDay = new Date(now.getFullYear(), now.getMonth(), 1)
@@ -28,6 +26,24 @@ export default function RelatoriosPage() {
     setStartDate(firstDay.toISOString().split('T')[0])
     setEndDate(lastDay.toISOString().split('T')[0])
   }, [])
+
+  const loadData = async () => {
+    try {
+      setLoading(true)
+      const [clientesData, faturasData, despesasData] = await Promise.all([
+        clienteService.getAll(),
+        faturaService.getAll(),
+        despesaService.getAll()
+      ])
+      setClientes(clientesData)
+      setFaturas(faturasData)
+      setDespesas(despesasData)
+    } catch (error) {
+      console.error('Erro ao carregar dados:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
 
   const handlePrint = () => {
     window.print()
@@ -297,6 +313,19 @@ export default function RelatoriosPage() {
           </div>
         </div>
       </div>
+    )
+  }
+
+  if (loading) {
+    return (
+      <MainLayout>
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto mb-4"></div>
+            <p className="text-gray-600">Carregando relatórios...</p>
+          </div>
+        </div>
+      </MainLayout>
     )
   }
 
