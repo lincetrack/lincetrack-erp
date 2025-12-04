@@ -519,7 +519,7 @@ export default function ClientesPage() {
                       id: `temp-${Date.now()}`,
                       veiculo: '',
                       placa: '',
-                      tipo_rastreador: 'LV 12 4G USB',
+                      tipo_rastreador: 'LV-12 4G USB',
                       imei: '',
                       com_bloqueio: false,
                       numero_chip: ''
@@ -868,7 +868,7 @@ export default function ClientesPage() {
                       id: `temp-${Date.now()}`,
                       veiculo: '',
                       placa: '',
-                      tipo_rastreador: 'LV 12 4G USB',
+                      tipo_rastreador: 'LV-12 4G USB',
                       imei: '',
                       com_bloqueio: false,
                       numero_chip: ''
