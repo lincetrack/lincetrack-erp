@@ -15,8 +15,30 @@ export default function InvoiceModal({ invoice, customer, onClose }: InvoiceModa
   }
 
   return (
-    <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-2 sm:p-4 overflow-y-auto">
-      <div className="bg-white w-full max-w-4xl max-h-[95vh] overflow-y-auto my-2 sm:my-4 p-4 sm:p-8 shadow-2xl relative text-xs sm:text-sm font-sans text-gray-800">
+    <>
+      <style jsx global>{`
+        @media print {
+          body * {
+            visibility: hidden;
+          }
+          #invoice-print-content,
+          #invoice-print-content * {
+            visibility: visible;
+          }
+          #invoice-print-content {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            background: white;
+            padding: 20px;
+            margin: 0;
+            box-shadow: none;
+          }
+        }
+      `}</style>
+      <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-2 sm:p-4 overflow-y-auto">
+        <div id="invoice-print-content" className="bg-white w-full max-w-4xl max-h-[95vh] overflow-y-auto my-2 sm:my-4 p-4 sm:p-8 shadow-2xl relative text-xs sm:text-sm font-sans text-gray-800">
         <button
           onClick={onClose}
           className="absolute top-2 right-2 sm:top-4 sm:right-4 text-gray-500 hover:text-red-500 print:hidden text-2xl font-bold z-10"
@@ -140,7 +162,8 @@ export default function InvoiceModal({ invoice, customer, onClose }: InvoiceModa
             🖨️ Imprimir / Salvar PDF
           </button>
         </div>
+        </div>
       </div>
-    </div>
+    </>
   )
 }
