@@ -40,7 +40,7 @@ Passando para lembrar, que a mensalidade do serviço de rastreamento veicular da
 
 Para facilitar, estou enviando o nosso pix.
 
-*CHAVE PIX CNPJ: 63061943000144*
+*CHAVE PIX CNPJ: 63.061.943/0001-44*
 
 Caso necessite de boleto por gentileza nos solicitar o envio.
 
