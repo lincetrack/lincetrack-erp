@@ -34,6 +34,7 @@ export interface Cliente {
 
 export interface Fatura {
   id: string
+  numero_fatura: number
   cliente_id: string
   cliente_nome: string
   descricao: string

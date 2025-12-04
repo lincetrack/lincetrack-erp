@@ -41,8 +41,8 @@ export default function InvoiceModal({ invoice, customer, onClose }: InvoiceModa
           </div>
           <div className="text-right">
             <div className="border border-gray-800 p-2 mb-2 inline-block text-center min-w-[120px]">
-              <p className="text-xs font-bold">NOTA Nº FATURA</p>
-              <p className="text-lg font-bold">{invoice.id.toString().slice(-4)}</p>
+              <p className="text-xs font-bold">Nº FATURA</p>
+              <p className="text-lg font-bold">{invoice.numero_fatura}</p>
             </div>
             <p className="text-sm"><strong>VENCIMENTO:</strong> {formatDate(invoice.data_vencimento)}</p>
             <p className="text-sm">Data de emissão: {formatDate(invoice.data_emissao)}</p>

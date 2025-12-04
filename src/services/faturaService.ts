@@ -54,7 +54,7 @@ export const faturaService = {
   },
 
   // Criar nova fatura
-  async create(fatura: Omit<Fatura, 'id' | 'created_at' | 'updated_at'>): Promise<Fatura> {
+  async create(fatura: Omit<Fatura, 'id' | 'numero_fatura' | 'created_at' | 'updated_at'>): Promise<Fatura> {
     const { data, error } = await supabase
       .from('faturas')
       .insert([fatura])
@@ -70,7 +70,7 @@ export const faturaService = {
   },
 
   // Criar múltiplas faturas
-  async createMany(faturas: Omit<Fatura, 'id' | 'created_at' | 'updated_at'>[]): Promise<Fatura[]> {
+  async createMany(faturas: Omit<Fatura, 'id' | 'numero_fatura' | 'created_at' | 'updated_at'>[]): Promise<Fatura[]> {
     const { data, error } = await supabase
       .from('faturas')
       .insert(faturas)

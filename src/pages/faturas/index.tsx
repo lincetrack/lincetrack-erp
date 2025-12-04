@@ -49,7 +49,7 @@ export default function FaturasPage() {
     try {
       const [year, month] = selectedMonth.split('-')
       let count = 0
-      const newInvoices: Omit<Fatura, 'id' | 'created_at' | 'updated_at'>[] = []
+      const newInvoices: Omit<Fatura, 'id' | 'numero_fatura' | 'created_at' | 'updated_at'>[] = []
 
       for (const cliente of clientes) {
         if (!cliente.ativo) continue
