@@ -380,6 +380,18 @@ export default function ClientesPage() {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Data de Nascimento
+                  </label>
+                  <input
+                    type="date"
+                    value={editingCliente.data_nascimento || ''}
+                    onChange={(e) => setEditingCliente({ ...editingCliente, data_nascimento: e.target.value })}
+                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
                     Telefone *
                   </label>
                   <input
@@ -724,6 +736,18 @@ export default function ClientesPage() {
                     onChange={(e) => setNewCliente({ ...newCliente, inscricao_estadual: e.target.value })}
                     className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                     placeholder="IE ou RG"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Data de Nascimento
+                  </label>
+                  <input
+                    type="date"
+                    value={newCliente.data_nascimento || ''}
+                    onChange={(e) => setNewCliente({ ...newCliente, data_nascimento: e.target.value })}
+                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                   />
                 </div>
 

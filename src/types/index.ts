@@ -16,6 +16,7 @@ export interface Cliente {
   nome: string
   cnpj: string
   inscricao_estadual?: string
+  data_nascimento?: string
   telefone: string
   email?: string
   endereco: string
