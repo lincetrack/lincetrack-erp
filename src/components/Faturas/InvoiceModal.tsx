@@ -10,6 +10,10 @@ interface InvoiceModalProps {
 export default function InvoiceModal({ invoice, customer, onClose }: InvoiceModalProps) {
   if (!invoice || !customer) return null
 
+  // Calcular quantidade e valor unitário baseado nos veículos do cliente
+  const quantidadeVeiculos = customer.veiculos?.length || 1
+  const valorUnitario = invoice.valor / quantidadeVeiculos
+
   const handlePrint = () => {
     window.print()
   }
@@ -122,8 +126,8 @@ export default function InvoiceModal({ invoice, customer, onClose }: InvoiceModa
           <tbody>
             <tr>
               <td className="border border-gray-800 p-2">{invoice.descricao}</td>
-              <td className="border border-gray-800 p-2 text-center">1</td>
-              <td className="border border-gray-800 p-2 text-right">{formatCurrency(invoice.valor)}</td>
+              <td className="border border-gray-800 p-2 text-center">{quantidadeVeiculos}</td>
+              <td className="border border-gray-800 p-2 text-right">{formatCurrency(valorUnitario)}</td>
               <td className="border border-gray-800 p-2 text-right font-bold">{formatCurrency(invoice.valor)}</td>
             </tr>
           </tbody>
