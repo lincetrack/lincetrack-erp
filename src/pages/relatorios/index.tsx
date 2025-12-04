@@ -97,6 +97,24 @@ export default function RelatoriosPage() {
 
     return (
       <div className="space-y-6">
+        {/* Cabeçalho do Relatório - Visível na impressão */}
+        <div className="hidden print:block mb-4">
+          <h1 className="text-2xl font-bold text-gray-800 mb-2">Relatório de Faturas</h1>
+          <p className="text-sm text-gray-600">
+            Período: {new Date(startDate).toLocaleDateString('pt-BR')} a {new Date(endDate).toLocaleDateString('pt-BR')}
+          </p>
+          {filterCliente !== 'todos' && (
+            <p className="text-sm text-gray-600">
+              Cliente: {clientesUnicos.find(c => c.id === filterCliente)?.nome}
+            </p>
+          )}
+          {filterStatus !== 'todos' && (
+            <p className="text-sm text-gray-600">
+              Status: {filterStatus === 'pendente' ? 'Pendente' : 'Pago'}
+            </p>
+          )}
+        </div>
+
         {/* Filtros */}
         <div className="bg-gray-50 p-4 rounded-lg border border-gray-200 print:hidden">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -153,23 +171,23 @@ export default function RelatoriosPage() {
             </div>
           )}
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="bg-blue-50 p-4 rounded-lg">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 print-summary-card">
+          <div className="bg-blue-50 p-4 rounded-lg print-no-break">
             <p className="text-sm text-gray-600">Total de Faturas</p>
             <p className="text-2xl font-bold text-blue-600">{formatCurrency(totalFaturas)}</p>
           </div>
-          <div className="bg-green-50 p-4 rounded-lg">
+          <div className="bg-green-50 p-4 rounded-lg print-no-break">
             <p className="text-sm text-gray-600">Faturas Pagas</p>
             <p className="text-2xl font-bold text-green-600">{formatCurrency(totalPagas)}</p>
           </div>
-          <div className="bg-yellow-50 p-4 rounded-lg">
+          <div className="bg-yellow-50 p-4 rounded-lg print-no-break">
             <p className="text-sm text-gray-600">Faturas Pendentes</p>
             <p className="text-2xl font-bold text-yellow-600">{formatCurrency(totalPendentes)}</p>
           </div>
         </div>
 
-        <div className="overflow-x-auto">
-          <table className="w-full border-collapse border border-gray-300">
+        <div className="overflow-x-auto print:overflow-visible">
+          <table className="w-full border-collapse border border-gray-300 print:text-sm">
             <thead className="bg-gray-100">
               <tr>
                 <th className="border border-gray-300 px-4 py-2 text-left">Data</th>
@@ -216,26 +234,34 @@ export default function RelatoriosPage() {
 
     return (
       <div className="space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="bg-red-50 p-4 rounded-lg">
+        {/* Cabeçalho do Relatório - Visível na impressão */}
+        <div className="hidden print:block mb-4">
+          <h1 className="text-2xl font-bold text-gray-800 mb-2">Relatório de Despesas</h1>
+          <p className="text-sm text-gray-600">
+            Período: {new Date(startDate).toLocaleDateString('pt-BR')} a {new Date(endDate).toLocaleDateString('pt-BR')}
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 print-summary-card">
+          <div className="bg-red-50 p-4 rounded-lg print-no-break">
             <p className="text-sm text-gray-600">Total de Despesas</p>
             <p className="text-2xl font-bold text-red-600">{formatCurrency(totalDespesas)}</p>
           </div>
-          <div className="bg-green-50 p-4 rounded-lg">
+          <div className="bg-green-50 p-4 rounded-lg print-no-break">
             <p className="text-sm text-gray-600">Despesas Pagas</p>
             <p className="text-2xl font-bold text-green-600">{formatCurrency(totalPagas)}</p>
           </div>
-          <div className="bg-orange-50 p-4 rounded-lg">
+          <div className="bg-orange-50 p-4 rounded-lg print-no-break">
             <p className="text-sm text-gray-600">Despesas Pendentes</p>
             <p className="text-2xl font-bold text-orange-600">{formatCurrency(totalPendentes)}</p>
           </div>
         </div>
 
-        <div className="bg-white p-4 rounded-lg border border-gray-300">
+        <div className="bg-white p-4 rounded-lg border border-gray-300 print-no-break">
           <h3 className="font-bold text-lg mb-4">Despesas por Categoria</h3>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 print:grid-cols-4">
             {Object.entries(porCategoria).map(([categoria, valor]) => (
-              <div key={categoria} className="text-center p-3 bg-gray-50 rounded">
+              <div key={categoria} className="text-center p-3 bg-gray-50 rounded print-no-break">
                 <p className="text-sm text-gray-600">{categoria}</p>
                 <p className="text-lg font-bold text-gray-800">{formatCurrency(valor)}</p>
               </div>
@@ -243,8 +269,8 @@ export default function RelatoriosPage() {
           </div>
         </div>
 
-        <div className="overflow-x-auto">
-          <table className="w-full border-collapse border border-gray-300">
+        <div className="overflow-x-auto print:overflow-visible">
+          <table className="w-full border-collapse border border-gray-300 print:text-sm">
             <thead className="bg-gray-100">
               <tr>
                 <th className="border border-gray-300 px-4 py-2 text-left">Data</th>
@@ -286,27 +312,35 @@ export default function RelatoriosPage() {
 
     return (
       <div className="space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div className="bg-blue-50 p-4 rounded-lg">
+        {/* Cabeçalho do Relatório - Visível na impressão */}
+        <div className="hidden print:block mb-4">
+          <h1 className="text-2xl font-bold text-gray-800 mb-2">Relatório de Clientes</h1>
+          <p className="text-sm text-gray-600">
+            Data de geração: {new Date().toLocaleDateString('pt-BR')}
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 print-summary-card">
+          <div className="bg-blue-50 p-4 rounded-lg print-no-break">
             <p className="text-sm text-gray-600">Total de Clientes</p>
             <p className="text-2xl font-bold text-blue-600">{clientes.length}</p>
           </div>
-          <div className="bg-green-50 p-4 rounded-lg">
+          <div className="bg-green-50 p-4 rounded-lg print-no-break">
             <p className="text-sm text-gray-600">Clientes Ativos</p>
             <p className="text-2xl font-bold text-green-600">{clientesAtivos.length}</p>
           </div>
-          <div className="bg-purple-50 p-4 rounded-lg">
+          <div className="bg-purple-50 p-4 rounded-lg print-no-break">
             <p className="text-sm text-gray-600">Receita Mensal</p>
             <p className="text-2xl font-bold text-purple-600">{formatCurrency(receitaMensal)}</p>
           </div>
-          <div className="bg-orange-50 p-4 rounded-lg">
+          <div className="bg-orange-50 p-4 rounded-lg print-no-break">
             <p className="text-sm text-gray-600">Total de Veículos</p>
             <p className="text-2xl font-bold text-orange-600">{totalVeiculos}</p>
           </div>
         </div>
 
-        <div className="overflow-x-auto">
-          <table className="w-full border-collapse border border-gray-300">
+        <div className="overflow-x-auto print:overflow-visible">
+          <table className="w-full border-collapse border border-gray-300 print:text-sm">
             <thead className="bg-gray-100">
               <tr>
                 <th className="border border-gray-300 px-4 py-2 text-left">Cliente</th>
@@ -351,22 +385,30 @@ export default function RelatoriosPage() {
 
     return (
       <div className="space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div className="bg-green-50 p-4 rounded-lg">
+        {/* Cabeçalho do Relatório - Visível na impressão */}
+        <div className="hidden print:block mb-4">
+          <h1 className="text-2xl font-bold text-gray-800 mb-2">Relatório Financeiro Consolidado</h1>
+          <p className="text-sm text-gray-600">
+            Período: {new Date(startDate).toLocaleDateString('pt-BR')} a {new Date(endDate).toLocaleDateString('pt-BR')}
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 print-summary-card">
+          <div className="bg-green-50 p-4 rounded-lg print-no-break">
             <p className="text-sm text-gray-600">Total Receitas</p>
             <p className="text-2xl font-bold text-green-600">{formatCurrency(totalReceitas)}</p>
           </div>
-          <div className="bg-red-50 p-4 rounded-lg">
+          <div className="bg-red-50 p-4 rounded-lg print-no-break">
             <p className="text-sm text-gray-600">Total Despesas</p>
             <p className="text-2xl font-bold text-red-600">{formatCurrency(totalDespesas)}</p>
           </div>
-          <div className={`p-4 rounded-lg ${resultado >= 0 ? 'bg-blue-50' : 'bg-orange-50'}`}>
+          <div className={`p-4 rounded-lg print-no-break ${resultado >= 0 ? 'bg-blue-50' : 'bg-orange-50'}`}>
             <p className="text-sm text-gray-600">Resultado</p>
             <p className={`text-2xl font-bold ${resultado >= 0 ? 'text-blue-600' : 'text-orange-600'}`}>
               {formatCurrency(resultado)}
             </p>
           </div>
-          <div className="bg-purple-50 p-4 rounded-lg">
+          <div className="bg-purple-50 p-4 rounded-lg print-no-break">
             <p className="text-sm text-gray-600">Margem</p>
             <p className="text-2xl font-bold text-purple-600">
               {totalReceitas > 0 ? ((resultado / totalReceitas) * 100).toFixed(1) : 0}%
@@ -374,10 +416,10 @@ export default function RelatoriosPage() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="bg-white p-4 rounded-lg border border-gray-300">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 print:grid-cols-2">
+          <div className="bg-white p-4 rounded-lg border border-gray-300 print-no-break">
             <h3 className="font-bold text-lg mb-4 text-green-700">Receitas Recebidas</h3>
-            <div className="space-y-2 max-h-96 overflow-y-auto">
+            <div className="space-y-2 max-h-96 overflow-y-auto print:max-h-none print:overflow-visible">
               {filteredFaturas.filter(f => f.status === 'pago').map(fatura => (
                 <div key={fatura.id} className="flex justify-between border-b pb-2">
                   <span className="text-sm">{fatura.cliente_nome}</span>
@@ -387,9 +429,9 @@ export default function RelatoriosPage() {
             </div>
           </div>
 
-          <div className="bg-white p-4 rounded-lg border border-gray-300">
+          <div className="bg-white p-4 rounded-lg border border-gray-300 print-no-break">
             <h3 className="font-bold text-lg mb-4 text-red-700">Despesas Pagas</h3>
-            <div className="space-y-2 max-h-96 overflow-y-auto">
+            <div className="space-y-2 max-h-96 overflow-y-auto print:max-h-none print:overflow-visible">
               {filteredDespesas.filter(d => d.status === 'pago').map(despesa => (
                 <div key={despesa.id} className="flex justify-between border-b pb-2">
                   <span className="text-sm">{despesa.descricao}</span>
@@ -461,8 +503,8 @@ export default function RelatoriosPage() {
           </div>
         ) : (
           <div className="space-y-6">
-            <div className="bg-white rounded-lg shadow-md p-6 print:shadow-none">
-              <div className="flex justify-between items-center mb-6 print:mb-4">
+            <div className="bg-white rounded-lg shadow-md p-6 print:shadow-none print:p-0">
+              <div className="flex justify-between items-center mb-6 print:hidden">
                 <h2 className="text-2xl font-bold text-gray-800">
                   {reportType === 'faturas' && 'Relatório de Faturas'}
                   {reportType === 'despesas' && 'Relatório de Despesas'}
