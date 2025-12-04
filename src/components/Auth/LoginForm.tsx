@@ -47,7 +47,7 @@ export default function LoginForm() {
         {/* Subtítulo */}
         <div className="text-center mb-8">
           <p className="text-sm text-gray-500 tracking-widest uppercase font-semibold">
-            Sistema de Gestão ERP
+            Sistema de Gestão
           </p>
         </div>
 
