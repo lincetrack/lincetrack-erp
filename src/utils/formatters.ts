@@ -40,17 +40,17 @@ Passando para lembrar, que a mensalidade do serviço de rastreamento veicular da
 
 Para facilitar, estou enviando o nosso pix.
 
-CHAVE PIX CNPJ : 63061943000144
+*CHAVE PIX CNPJ: 63061943000144*
 
 Caso necessite de boleto por gentileza nos solicitar o envio.
 
-Caso já tenha efetuado o pagamento, por gentileza nos enviar o comprovante!
+Se o pagamento já foi realizado, pedimos a gentileza de nos encaminhar o comprovante.
 
 Se precisar de qualquer ajuda ou tiver alguma dúvida, estamos à disposição!
 
 Agradecemos pela parceria e confiança em nossos serviços.
 Atenciosamente,
-Equipe Lince Track`;
+*Equipe Lince Track*`;
 
   const cleanPhone = phone.replace(/\D/g, '');
   return `https://wa.me/55${cleanPhone}?text=${encodeURIComponent(message)}`;
