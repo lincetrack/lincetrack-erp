@@ -29,7 +29,7 @@ export default function InvoiceModal({ invoice, customer, onClose }: InvoiceModa
           <div className="flex items-center gap-4">
             <div className="w-28 h-20 flex items-center justify-center">
               <img
-                src="/logo-lince-track.svg"
+                src="/logo-lince-track-new.png"
                 alt="Lince Track Logo"
                 className="w-full h-full object-contain"
               />

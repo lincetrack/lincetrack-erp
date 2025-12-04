@@ -1,20 +1,18 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import MainLayout from '@/components/Layout/MainLayout'
-import { Cliente } from '@/types'
+import { Cliente, Veiculo } from '@/types'
 import { formatCurrency, formatPhone, formatCNPJ } from '@/utils/formatters'
-import { useLocalStorage } from '@/hooks/useLocalStorage'
-
-const INITIAL_CLIENTES: Cliente[] = []
+import { clienteService } from '@/services/clienteService'
+import { veiculoService } from '@/services/veiculoService'
 
 export default function ClientesPage() {
+  const [clientes, setClientes] = useState<Cliente[]>([])
+  const [loading, setLoading] = useState(true)
   const [showAddModal, setShowAddModal] = useState(false)
   const [showEditModal, setShowEditModal] = useState(false)
   const [editingCliente, setEditingCliente] = useState<Cliente | null>(null)
   const [notification, setNotification] = useState<string | null>(null)
   const [searchTerm, setSearchTerm] = useState('')
-
-  // Usar hook customizado para persistência
-  const [clientes, setClientes] = useLocalStorage<Cliente[]>('clientes', INITIAL_CLIENTES)
 
   const [newCliente, setNewCliente] = useState<Partial<Cliente>>({
     nome: '',
@@ -39,62 +37,84 @@ export default function ClientesPage() {
     'RS', 'RO', 'RR', 'SC', 'SP', 'SE', 'TO'
   ]
 
+  // Carregar clientes do Supabase
+  useEffect(() => {
+    loadClientes()
+  }, [])
+
+  const loadClientes = async () => {
+    try {
+      setLoading(true)
+      const data = await clienteService.getAll()
+      setClientes(data)
+    } catch (error) {
+      console.error('Erro ao carregar clientes:', error)
+      showNotification('Erro ao carregar clientes')
+    } finally {
+      setLoading(false)
+    }
+  }
+
   const showNotification = (message: string) => {
     setNotification(message)
     setTimeout(() => setNotification(null), 3000)
   }
 
-  const handleAddCliente = () => {
+  const handleAddCliente = async () => {
     if (!newCliente.nome || !newCliente.cnpj || !newCliente.telefone) {
       showNotification('Preencha todos os campos obrigatórios!')
       return
     }
 
-    const cliente: Cliente = {
-      id: `${Date.now()}`,
-      nome: newCliente.nome!,
-      cnpj: newCliente.cnpj!,
-      telefone: newCliente.telefone!,
-      email: newCliente.email,
-      endereco: newCliente.endereco!,
-      bairro: newCliente.bairro!,
-      cidade: newCliente.cidade!,
-      estado: newCliente.estado!,
-      cep: newCliente.cep,
-      valor_mensalidade: newCliente.valor_mensalidade!,
-      dia_vencimento: newCliente.dia_vencimento!,
-      login_plataforma: newCliente.login_plataforma,
-      veiculos: [],
-      ativo: true,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString()
-    }
+    try {
+      const { veiculos, ...clienteData } = newCliente
+      const clienteCriado = await clienteService.create(clienteData as any)
 
-    setClientes([...clientes, cliente])
-    setShowAddModal(false)
-    setNewCliente({
-      nome: '',
-      cnpj: '',
-      telefone: '',
-      email: '',
-      endereco: '',
-      bairro: '',
-      cidade: '',
-      estado: 'PR',
-      cep: '',
-      valor_mensalidade: 79.90,
-      dia_vencimento: '10',
-      login_plataforma: '',
-      veiculos: [],
-      ativo: true
-    })
-    showNotification('Cliente adicionado com sucesso!')
+      // Se há veículos, criar cada um
+      if (veiculos && veiculos.length > 0) {
+        for (const veiculo of veiculos) {
+          const { id, ...veiculoData } = veiculo
+          await veiculoService.create({
+            ...veiculoData,
+            cliente_id: clienteCriado.id
+          })
+        }
+      }
+
+      await loadClientes()
+      setShowAddModal(false)
+      setNewCliente({
+        nome: '',
+        cnpj: '',
+        telefone: '',
+        email: '',
+        endereco: '',
+        bairro: '',
+        cidade: '',
+        estado: 'PR',
+        cep: '',
+        valor_mensalidade: 79.90,
+        dia_vencimento: '10',
+        login_plataforma: '',
+        veiculos: [],
+        ativo: true
+      })
+      showNotification('Cliente adicionado com sucesso!')
+    } catch (error) {
+      console.error('Erro ao adicionar cliente:', error)
+      showNotification('Erro ao adicionar cliente')
+    }
   }
 
-  const toggleAtivo = (id: string) => {
-    setClientes(clientes.map(c =>
-      c.id === id ? { ...c, ativo: !c.ativo, updated_at: new Date().toISOString() } : c
-    ))
+  const toggleAtivo = async (id: string) => {
+    try {
+      await clienteService.toggleAtivo(id)
+      await loadClientes()
+      showNotification('Status atualizado!')
+    } catch (error) {
+      console.error('Erro ao atualizar status:', error)
+      showNotification('Erro ao atualizar status')
+    }
   }
 
   const handleEditCliente = (cliente: Cliente) => {
@@ -102,21 +122,62 @@ export default function ClientesPage() {
     setShowEditModal(true)
   }
 
-  const handleUpdateCliente = () => {
+  const handleUpdateCliente = async () => {
     if (!editingCliente) return
 
-    setClientes(clientes.map(c =>
-      c.id === editingCliente.id ? { ...editingCliente, updated_at: new Date().toISOString() } : c
-    ))
-    setShowEditModal(false)
-    setEditingCliente(null)
-    showNotification('Cliente atualizado com sucesso!')
+    try {
+      const { veiculos, ...clienteData } = editingCliente
+      await clienteService.update(editingCliente.id, clienteData)
+
+      // Buscar veículos existentes
+      const veiculosExistentes = await veiculoService.getByClienteId(editingCliente.id)
+
+      // Remover veículos que não estão mais na lista
+      for (const veiculoExistente of veiculosExistentes) {
+        const aindaExists = veiculos?.find(v => v.id === veiculoExistente.id)
+        if (!aindaExists) {
+          await veiculoService.delete(veiculoExistente.id)
+        }
+      }
+
+      // Atualizar ou criar veículos
+      if (veiculos && veiculos.length > 0) {
+        for (const veiculo of veiculos) {
+          if (veiculo.id && veiculo.id.toString().length > 20) {
+            // UUID do Supabase - atualizar
+            const { id, ...veiculoData } = veiculo
+            await veiculoService.update(id, veiculoData)
+          } else {
+            // ID temporário - criar novo
+            const { id, ...veiculoData } = veiculo
+            await veiculoService.create({
+              ...veiculoData,
+              cliente_id: editingCliente.id
+            })
+          }
+        }
+      }
+
+      await loadClientes()
+      setShowEditModal(false)
+      setEditingCliente(null)
+      showNotification('Cliente atualizado com sucesso!')
+    } catch (error) {
+      console.error('Erro ao atualizar cliente:', error)
+      showNotification('Erro ao atualizar cliente')
+    }
   }
 
-  const handleDeleteCliente = (id: string) => {
+  const handleDeleteCliente = async (id: string) => {
     if (confirm('Tem certeza que deseja excluir este cliente? Esta ação não pode ser desfeita.')) {
-      setClientes(clientes.filter(c => c.id !== id))
-      showNotification('Cliente excluído com sucesso!')
+      try {
+        await clienteService.delete(id)
+        await loadClientes()
+        showNotification('Cliente excluído com sucesso!')
+      } catch (error) {
+        console.error('Erro ao excluir cliente:', error)
+        showNotification('Erro ao excluir cliente')
+      }
     }
   }
 
@@ -130,6 +191,19 @@ export default function ClientesPage() {
   const receitaMensal = clientes
     .filter(c => c.ativo)
     .reduce((acc, c) => acc + c.valor_mensalidade, 0)
+
+  if (loading) {
+    return (
+      <MainLayout>
+        <div className="flex items-center justify-center h-64">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto mb-4"></div>
+            <p className="text-gray-600">Carregando clientes...</p>
+          </div>
+        </div>
+      </MainLayout>
+    )
+  }
 
   return (
     <MainLayout>
@@ -247,7 +321,7 @@ export default function ClientesPage() {
         </div>
       </div>
 
-      {/* Modal de Editar Cliente */}
+      {/* Modal de Editar Cliente - Continua igual mas agora salva no Supabase */}
       {showEditModal && editingCliente && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 overflow-y-auto">
           <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl p-6 my-8">
@@ -417,7 +491,7 @@ export default function ClientesPage() {
                   type="button"
                   onClick={() => {
                     const novoVeiculo = {
-                      id: `${Date.now()}-${Math.random()}`,
+                      id: `temp-${Date.now()}`,
                       veiculo: '',
                       placa: '',
                       tipo_rastreador: 'GT06N',
@@ -573,7 +647,7 @@ export default function ClientesPage() {
         </div>
       )}
 
-      {/* Modal de Adicionar Cliente */}
+      {/* Modal de Adicionar Cliente - Similar ao modal de edição */}
       {showAddModal && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 overflow-y-auto">
           <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl p-6 my-8">
@@ -722,7 +796,7 @@ export default function ClientesPage() {
               </div>
             </div>
 
-            {/* Seção de Veículos */}
+            {/* Seção de Veículos - Mesmo código do modal de edição */}
             <div className="mt-6 border-t pt-4">
               <div className="flex justify-between items-center mb-4">
                 <h3 className="text-lg font-semibold text-gray-800">Veículos / Equipamentos</h3>
@@ -730,7 +804,7 @@ export default function ClientesPage() {
                   type="button"
                   onClick={() => {
                     const novoVeiculo = {
-                      id: `${Date.now()}-${Math.random()}`,
+                      id: `temp-${Date.now()}`,
                       veiculo: '',
                       placa: '',
                       tipo_rastreador: 'GT06N',

@@ -3,9 +3,8 @@ import MainLayout from '@/components/Layout/MainLayout'
 import InvoiceModal from '@/components/Faturas/InvoiceModal'
 import { Fatura, Cliente } from '@/types'
 import { formatCurrency, formatDate, generateWhatsappLink } from '@/utils/formatters'
-import { useLocalStorage } from '@/hooks/useLocalStorage'
-
-const INITIAL_FATURAS: Fatura[] = []
+import { faturaService } from '@/services/faturaService'
+import { clienteService } from '@/services/clienteService'
 
 export default function FaturasPage() {
   const [selectedMonth, setSelectedMonth] = useState('2025-12')
@@ -14,73 +13,88 @@ export default function FaturasPage() {
   const [showEditModal, setShowEditModal] = useState(false)
   const [editingFatura, setEditingFatura] = useState<Fatura | null>(null)
   const [notification, setNotification] = useState<string | null>(null)
+  const [loading, setLoading] = useState(true)
 
-  // Carregar clientes do localStorage (sincronizado com a página de clientes)
+  // Carregar do Supabase
   const [clientes, setClientes] = useState<Cliente[]>([])
+  const [faturas, setFaturas] = useState<Fatura[]>([])
 
   useEffect(() => {
-    const clientesData = localStorage.getItem('clientes')
-    if (clientesData) {
-      setClientes(JSON.parse(clientesData))
-    }
+    loadData()
   }, [])
 
-  // Usar hook customizado para persistência de faturas
-  const [faturas, setFaturas] = useLocalStorage<Fatura[]>('faturas', INITIAL_FATURAS)
+  const loadData = async () => {
+    try {
+      setLoading(true)
+      const [clientesData, faturasData] = await Promise.all([
+        clienteService.getAll(),
+        faturaService.getAll()
+      ])
+      setClientes(clientesData)
+      setFaturas(faturasData)
+    } catch (error) {
+      console.error('Erro ao carregar dados:', error)
+      showNotification('Erro ao carregar dados')
+    } finally {
+      setLoading(false)
+    }
+  }
 
   const showNotification = (message: string) => {
     setNotification(message)
     setTimeout(() => setNotification(null), 3000)
   }
 
-  const generateInvoices = () => {
-    const [year, month] = selectedMonth.split('-')
-    let count = 0
-    const newInvoices: Fatura[] = []
+  const generateInvoices = async () => {
+    try {
+      const [year, month] = selectedMonth.split('-')
+      let count = 0
+      const newInvoices: Omit<Fatura, 'id' | 'created_at' | 'updated_at'>[] = []
 
-    clientes.forEach(cliente => {
-      if (!cliente.ativo) return
+      for (const cliente of clientes) {
+        if (!cliente.ativo) continue
 
-      const dueDate = `${year}-${month}-${cliente.dia_vencimento.padStart(2, '0')}`
+        const dueDate = `${year}-${month}-${cliente.dia_vencimento.padStart(2, '0')}`
 
-      const exists = faturas.some(f =>
-        f.cliente_id === cliente.id && f.data_vencimento === dueDate
-      )
+        const exists = await faturaService.checkExists(cliente.id, dueDate)
 
-      if (!exists) {
-        newInvoices.push({
-          id: `${Date.now()}-${Math.random()}`,
-          cliente_id: cliente.id,
-          cliente_nome: cliente.nome,
-          descricao: 'Loc. Equipamento e Software para Rastreamento Veicular',
-          valor: cliente.valor_mensalidade,
-          data_vencimento: dueDate,
-          data_emissao: new Date().toISOString().split('T')[0],
-          status: 'pendente',
-          enviado_whatsapp: false,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
-        })
-        count++
+        if (!exists) {
+          newInvoices.push({
+            cliente_id: cliente.id,
+            cliente_nome: cliente.nome,
+            descricao: 'Loc. Equipamento e Software para Rastreamento Veicular',
+            valor: cliente.valor_mensalidade,
+            data_vencimento: dueDate,
+            data_emissao: new Date().toISOString().split('T')[0],
+            status: 'pendente',
+            enviado_whatsapp: false
+          })
+          count++
+        }
       }
-    })
 
-    if (count > 0) {
-      setFaturas([...faturas, ...newInvoices])
-      showNotification(`${count} fatura(s) gerada(s) com sucesso!`)
-    } else {
-      showNotification('Todas as faturas deste mês já foram geradas.')
+      if (count > 0) {
+        await faturaService.createMany(newInvoices)
+        await loadData()
+        showNotification(`${count} fatura(s) gerada(s) com sucesso!`)
+      } else {
+        showNotification('Todas as faturas deste mês já foram geradas.')
+      }
+    } catch (error) {
+      console.error('Erro ao gerar faturas:', error)
+      showNotification('Erro ao gerar faturas')
     }
   }
 
-  const toggleStatus = (id: string) => {
-    setFaturas(faturas.map(f =>
-      f.id === id ? {
-        ...f,
-        status: f.status === 'pago' ? 'pendente' : 'pago' as 'pago' | 'pendente',
-        updated_at: new Date().toISOString()
-      } : f
-    ))
+  const toggleStatus = async (id: string) => {
+    try {
+      await faturaService.toggleStatus(id)
+      await loadData()
+      showNotification('Status atualizado!')
+    } catch (error) {
+      console.error('Erro ao atualizar status:', error)
+      showNotification('Erro ao atualizar status')
+    }
   }
 
   const handlePrintInvoice = (fatura: Fatura) => {
@@ -91,15 +105,18 @@ export default function FaturasPage() {
     }
   }
 
-  const handleSendWhatsapp = (fatura: Fatura) => {
-    const cliente = clientes.find(c => c.id === fatura.cliente_id)
-    if (cliente) {
-      const link = generateWhatsappLink(cliente.telefone, cliente.nome, fatura.data_vencimento)
-      window.open(link, '_blank')
+  const handleSendWhatsapp = async (fatura: Fatura) => {
+    try {
+      const cliente = clientes.find(c => c.id === fatura.cliente_id)
+      if (cliente) {
+        const link = generateWhatsappLink(cliente.telefone, cliente.nome, fatura.data_vencimento)
+        window.open(link, '_blank')
 
-      setFaturas(faturas.map(f =>
-        f.id === fatura.id ? { ...f, enviado_whatsapp: true, updated_at: new Date().toISOString() } : f
-      ))
+        await faturaService.markWhatsappSent(fatura.id)
+        await loadData()
+      }
+    } catch (error) {
+      console.error('Erro ao marcar WhatsApp:', error)
     }
   }
 
@@ -108,21 +125,31 @@ export default function FaturasPage() {
     setShowEditModal(true)
   }
 
-  const handleUpdateFatura = () => {
+  const handleUpdateFatura = async () => {
     if (!editingFatura) return
 
-    setFaturas(faturas.map(f =>
-      f.id === editingFatura.id ? { ...editingFatura, updated_at: new Date().toISOString() } : f
-    ))
-    setShowEditModal(false)
-    setEditingFatura(null)
-    showNotification('Fatura atualizada com sucesso!')
+    try {
+      await faturaService.update(editingFatura.id, editingFatura)
+      await loadData()
+      setShowEditModal(false)
+      setEditingFatura(null)
+      showNotification('Fatura atualizada com sucesso!')
+    } catch (error) {
+      console.error('Erro ao atualizar fatura:', error)
+      showNotification('Erro ao atualizar fatura')
+    }
   }
 
-  const handleDeleteFatura = (id: string) => {
+  const handleDeleteFatura = async (id: string) => {
     if (confirm('Tem certeza que deseja excluir esta fatura? Esta ação não pode ser desfeita.')) {
-      setFaturas(faturas.filter(f => f.id !== id))
-      showNotification('Fatura excluída com sucesso!')
+      try {
+        await faturaService.delete(id)
+        await loadData()
+        showNotification('Fatura excluída com sucesso!')
+      } catch (error) {
+        console.error('Erro ao excluir fatura:', error)
+        showNotification('Erro ao excluir fatura')
+      }
     }
   }
 
@@ -135,6 +162,19 @@ export default function FaturasPage() {
   const totalPago = filteredFaturas
     .filter(f => f.status === 'pago')
     .reduce((acc, f) => acc + f.valor, 0)
+
+  if (loading) {
+    return (
+      <MainLayout>
+        <div className="flex items-center justify-center h-64">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto mb-4"></div>
+            <p className="text-gray-600">Carregando faturas...</p>
+          </div>
+        </div>
+      </MainLayout>
+    )
+  }
 
   return (
     <MainLayout>

@@ -1,11 +1,14 @@
 export interface Veiculo {
   id: string
+  cliente_id?: string
   veiculo: string
   placa: string
   tipo_rastreador: string
   imei: string
   com_bloqueio: boolean
   numero_chip: string
+  created_at?: string
+  updated_at?: string
 }
 
 export interface Cliente {

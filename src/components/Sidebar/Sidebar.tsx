@@ -53,7 +53,7 @@ export default function Sidebar() {
         <div className="p-6 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <img
-              src="/logo-lince-track.svg"
+              src="/logo-lince-track-new.png"
               alt="Lince Track Logo"
               className="w-10 h-10 object-contain"
             />

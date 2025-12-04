@@ -37,7 +37,7 @@ export default function LoginForm() {
         <div className="flex justify-center mb-6">
           <div className="w-40 h-32">
             <img
-              src="/logo-lince-track.svg"
+              src="/logo-lince-track-new.png"
               alt="Lince Track Logo"
               className="w-full h-full object-contain"
             />

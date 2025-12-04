@@ -1,10 +1,8 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import MainLayout from '@/components/Layout/MainLayout'
 import { Despesa } from '@/types'
 import { formatCurrency, formatDate } from '@/utils/formatters'
-import { useLocalStorage } from '@/hooks/useLocalStorage'
-
-const INITIAL_DESPESAS: Despesa[] = []
+import { despesaService } from '@/services/despesaService'
 
 export default function DespesasPage() {
   const [selectedMonth, setSelectedMonth] = useState('2025-12')
@@ -12,9 +10,27 @@ export default function DespesasPage() {
   const [showEditModal, setShowEditModal] = useState(false)
   const [editingDespesa, setEditingDespesa] = useState<Despesa | null>(null)
   const [notification, setNotification] = useState<string | null>(null)
+  const [loading, setLoading] = useState(true)
 
-  // Usar hook customizado para persistência
-  const [despesas, setDespesas] = useLocalStorage<Despesa[]>('despesas', INITIAL_DESPESAS)
+  // Carregar do Supabase
+  const [despesas, setDespesas] = useState<Despesa[]>([])
+
+  useEffect(() => {
+    loadDespesas()
+  }, [])
+
+  const loadDespesas = async () => {
+    try {
+      setLoading(true)
+      const data = await despesaService.getAll()
+      setDespesas(data)
+    } catch (error) {
+      console.error('Erro ao carregar despesas:', error)
+      showNotification('Erro ao carregar despesas')
+    } finally {
+      setLoading(false)
+    }
+  }
 
   const [newDespesa, setNewDespesa] = useState<Partial<Despesa>>({
     descricao: '',
@@ -44,51 +60,49 @@ export default function DespesasPage() {
     setTimeout(() => setNotification(null), 3000)
   }
 
-  const handleAddDespesa = () => {
+  const handleAddDespesa = async () => {
     if (!newDespesa.descricao || !newDespesa.data_vencimento || newDespesa.valor === 0) {
       showNotification('Preencha todos os campos obrigatórios!')
       return
     }
 
-    const despesa: Despesa = {
-      id: `${Date.now()}`,
-      descricao: newDespesa.descricao!,
-      categoria: newDespesa.categoria!,
-      valor: newDespesa.valor!,
-      data_vencimento: newDespesa.data_vencimento!,
-      status: 'pendente',
-      fornecedor: newDespesa.fornecedor,
-      observacoes: newDespesa.observacoes,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString()
-    }
+    try {
+      await despesaService.create({
+        descricao: newDespesa.descricao!,
+        categoria: newDespesa.categoria!,
+        valor: newDespesa.valor!,
+        data_vencimento: newDespesa.data_vencimento!,
+        status: 'pendente',
+        fornecedor: newDespesa.fornecedor,
+        observacoes: newDespesa.observacoes
+      })
 
-    setDespesas([...despesas, despesa])
-    setShowAddModal(false)
-    setNewDespesa({
-      descricao: '',
-      categoria: 'Infraestrutura',
-      valor: 0,
-      data_vencimento: '',
-      status: 'pendente',
-      fornecedor: ''
-    })
-    showNotification('Despesa adicionada com sucesso!')
+      await loadDespesas()
+      setShowAddModal(false)
+      setNewDespesa({
+        descricao: '',
+        categoria: 'Infraestrutura',
+        valor: 0,
+        data_vencimento: '',
+        status: 'pendente',
+        fornecedor: ''
+      })
+      showNotification('Despesa adicionada com sucesso!')
+    } catch (error) {
+      console.error('Erro ao adicionar despesa:', error)
+      showNotification('Erro ao adicionar despesa')
+    }
   }
 
-  const toggleStatus = (id: string) => {
-    setDespesas(despesas.map(d => {
-      if (d.id === id) {
-        const newStatus = d.status === 'pago' ? 'pendente' : 'pago'
-        return {
-          ...d,
-          status: newStatus as 'pago' | 'pendente',
-          data_pagamento: newStatus === 'pago' ? new Date().toISOString().split('T')[0] : undefined,
-          updated_at: new Date().toISOString()
-        }
-      }
-      return d
-    }))
+  const toggleStatus = async (id: string) => {
+    try {
+      await despesaService.toggleStatus(id)
+      await loadDespesas()
+      showNotification('Status atualizado!')
+    } catch (error) {
+      console.error('Erro ao atualizar status:', error)
+      showNotification('Erro ao atualizar status')
+    }
   }
 
   const handleEditDespesa = (despesa: Despesa) => {
@@ -96,21 +110,31 @@ export default function DespesasPage() {
     setShowEditModal(true)
   }
 
-  const handleUpdateDespesa = () => {
+  const handleUpdateDespesa = async () => {
     if (!editingDespesa) return
 
-    setDespesas(despesas.map(d =>
-      d.id === editingDespesa.id ? { ...editingDespesa, updated_at: new Date().toISOString() } : d
-    ))
-    setShowEditModal(false)
-    setEditingDespesa(null)
-    showNotification('Despesa atualizada com sucesso!')
+    try {
+      await despesaService.update(editingDespesa.id, editingDespesa)
+      await loadDespesas()
+      setShowEditModal(false)
+      setEditingDespesa(null)
+      showNotification('Despesa atualizada com sucesso!')
+    } catch (error) {
+      console.error('Erro ao atualizar despesa:', error)
+      showNotification('Erro ao atualizar despesa')
+    }
   }
 
-  const deleteDespesa = (id: string) => {
+  const deleteDespesa = async (id: string) => {
     if (confirm('Tem certeza que deseja excluir esta despesa?')) {
-      setDespesas(despesas.filter(d => d.id !== id))
-      showNotification('Despesa excluída com sucesso!')
+      try {
+        await despesaService.delete(id)
+        await loadDespesas()
+        showNotification('Despesa excluída com sucesso!')
+      } catch (error) {
+        console.error('Erro ao excluir despesa:', error)
+        showNotification('Erro ao excluir despesa')
+      }
     }
   }
 

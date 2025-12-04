@@ -3,22 +3,37 @@ import MainLayout from '@/components/Layout/MainLayout'
 import StatsCard from '@/components/Dashboard/StatsCard'
 import { Cliente, Fatura, Despesa } from '@/types'
 import { formatCurrency } from '@/utils/formatters'
+import { clienteService } from '@/services/clienteService'
+import { faturaService } from '@/services/faturaService'
+import { despesaService } from '@/services/despesaService'
 
 export default function DashboardPage() {
   const [clientes, setClientes] = useState<Cliente[]>([])
   const [faturas, setFaturas] = useState<Fatura[]>([])
   const [despesas, setDespesas] = useState<Despesa[]>([])
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    // Carregar dados do localStorage (posteriormente será do Supabase)
-    const clientesData = localStorage.getItem('clientes')
-    const faturasData = localStorage.getItem('faturas')
-    const despesasData = localStorage.getItem('despesas')
-
-    if (clientesData) setClientes(JSON.parse(clientesData))
-    if (faturasData) setFaturas(JSON.parse(faturasData))
-    if (despesasData) setDespesas(JSON.parse(despesasData))
+    loadData()
   }, [])
+
+  const loadData = async () => {
+    try {
+      setLoading(true)
+      const [clientesData, faturasData, despesasData] = await Promise.all([
+        clienteService.getAll(),
+        faturaService.getAll(),
+        despesaService.getAll()
+      ])
+      setClientes(clientesData)
+      setFaturas(faturasData)
+      setDespesas(despesasData)
+    } catch (error) {
+      console.error('Erro ao carregar dados:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
 
   // Calcular métricas
   const clientesAtivos = clientes.filter(c => c.ativo).length
