@@ -15,6 +15,10 @@ export default function FaturasPage() {
   const [notification, setNotification] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
 
+  // Filtros
+  const [searchTerm, setSearchTerm] = useState('')
+  const [filterStatus, setFilterStatus] = useState<string>('todos')
+
   // Carregar do Supabase
   const [clientes, setClientes] = useState<Cliente[]>([])
   const [faturas, setFaturas] = useState<Fatura[]>([])
@@ -154,7 +158,23 @@ export default function FaturasPage() {
     }
   }
 
-  const filteredFaturas = faturas.filter(f => f.data_vencimento.startsWith(selectedMonth))
+  // Filtrar faturas por mês, nome do cliente e status
+  const filteredFaturas = faturas
+    .filter(f => f.data_vencimento.startsWith(selectedMonth))
+    .filter(f => {
+      // Filtro por nome do cliente
+      if (searchTerm) {
+        return f.cliente_nome.toLowerCase().includes(searchTerm.toLowerCase())
+      }
+      return true
+    })
+    .filter(f => {
+      // Filtro por status
+      if (filterStatus !== 'todos') {
+        return f.status === filterStatus
+      }
+      return true
+    })
 
   const totalPendente = filteredFaturas
     .filter(f => f.status === 'pendente')
@@ -188,9 +208,9 @@ export default function FaturasPage() {
         )}
 
         {/* Header */}
-        <div className="flex justify-between items-center">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <h1 className="text-3xl font-bold text-gray-800">Gestão de Faturas</h1>
-          <div className="flex gap-3">
+          <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
             <input
               type="month"
               value={selectedMonth}
@@ -199,11 +219,69 @@ export default function FaturasPage() {
             />
             <button
               onClick={generateInvoices}
-              className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors"
+              className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center justify-center gap-2 transition-colors"
             >
               🔄 Gerar Faturas
             </button>
           </div>
+        </div>
+
+        {/* Barra de Filtros */}
+        <div className="bg-white rounded-lg shadow-md p-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Buscar por Cliente
+              </label>
+              <input
+                type="text"
+                placeholder="Digite o nome do cliente..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Filtrar por Status
+              </label>
+              <select
+                value={filterStatus}
+                onChange={(e) => setFilterStatus(e.target.value)}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white"
+              >
+                <option value="todos">Todos os Status</option>
+                <option value="pendente">Pendente</option>
+                <option value="pago">Pago</option>
+                <option value="atrasado">Atrasado</option>
+                <option value="cancelado">Cancelado</option>
+              </select>
+            </div>
+          </div>
+          {(searchTerm || filterStatus !== 'todos') && (
+            <div className="mt-3 flex items-center gap-2 text-sm text-gray-600">
+              <span className="font-medium">Filtros ativos:</span>
+              {searchTerm && (
+                <span className="bg-primary-100 text-primary-700 px-2 py-1 rounded">
+                  Cliente: &quot;{searchTerm}&quot;
+                </span>
+              )}
+              {filterStatus !== 'todos' && (
+                <span className="bg-primary-100 text-primary-700 px-2 py-1 rounded">
+                  Status: {filterStatus}
+                </span>
+              )}
+              <button
+                onClick={() => {
+                  setSearchTerm('')
+                  setFilterStatus('todos')
+                }}
+                className="text-red-600 hover:text-red-700 ml-2"
+              >
+                ✕ Limpar filtros
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Cards de Resumo */}
