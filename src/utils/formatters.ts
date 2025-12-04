@@ -27,13 +27,16 @@ export const formatCNPJ = (cnpj: string): string => {
   return cnpj;
 };
 
-export const generateWhatsappLink = (phone: string, customerName: string, dueDate: string): string => {
+export const generateWhatsappLink = (phone: string, customerName: string, dueDate: string, valor: number): string => {
   const [year, month] = dueDate.split('-');
   const period = `${month}/${year}`;
+  const valorFormatado = formatCurrency(valor);
 
   const message = `Olá, ${customerName}! Tudo bem? 😊
 
 Passando para lembrar, que a mensalidade do serviço de rastreamento veicular da Lince Track referente ao período [${period}] está disponível para pagamento.
+
+*Valor: ${valorFormatado}*
 
 Para facilitar, estou enviando o nosso pix.
 

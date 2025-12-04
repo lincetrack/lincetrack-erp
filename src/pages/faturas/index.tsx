@@ -115,7 +115,7 @@ export default function FaturasPage() {
     try {
       const cliente = clientes.find(c => c.id === fatura.cliente_id)
       if (cliente) {
-        const link = generateWhatsappLink(cliente.telefone, cliente.nome, fatura.data_vencimento)
+        const link = generateWhatsappLink(cliente.telefone, cliente.nome, fatura.data_vencimento, fatura.valor)
         window.open(link, '_blank')
 
         await faturaService.markWhatsappSent(fatura.id)
