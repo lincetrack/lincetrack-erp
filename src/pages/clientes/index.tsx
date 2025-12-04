@@ -740,7 +740,7 @@ export default function ClientesPage() {
                   />
                 </div>
 
-              <div className="md:col-span-2">
+              <div className="sm:col-span-2">
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Email
                 </label>
@@ -748,11 +748,24 @@ export default function ClientesPage() {
                   type="email"
                   value={newCliente.email}
                   onChange={(e) => setNewCliente({ ...newCliente, email: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                 />
               </div>
 
-              <div className="md:col-span-2">
+              <div className="sm:col-span-2">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Login da Plataforma
+                </label>
+                <input
+                  type="text"
+                  value={newCliente.login_plataforma || ''}
+                  onChange={(e) => setNewCliente({ ...newCliente, login_plataforma: e.target.value })}
+                  className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  placeholder="usuario.plataforma"
+                />
+              </div>
+
+              <div className="sm:col-span-2">
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Endereço *
                 </label>
@@ -772,7 +785,7 @@ export default function ClientesPage() {
                   type="text"
                   value={newCliente.bairro}
                   onChange={(e) => setNewCliente({ ...newCliente, bairro: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                 />
               </div>
 
@@ -784,7 +797,7 @@ export default function ClientesPage() {
                   type="text"
                   value={newCliente.cep}
                   onChange={(e) => setNewCliente({ ...newCliente, cep: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                   placeholder="00000-000"
                 />
               </div>
@@ -797,7 +810,7 @@ export default function ClientesPage() {
                   type="text"
                   value={newCliente.cidade}
                   onChange={(e) => setNewCliente({ ...newCliente, cidade: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                 />
               </div>
 
@@ -808,7 +821,7 @@ export default function ClientesPage() {
                 <select
                   value={newCliente.estado}
                   onChange={(e) => setNewCliente({ ...newCliente, estado: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                 >
                   {estados.map(uf => (
                     <option key={uf} value={uf}>{uf}</option>
@@ -825,7 +838,7 @@ export default function ClientesPage() {
                   step="0.01"
                   value={newCliente.valor_mensalidade}
                   onChange={(e) => setNewCliente({ ...newCliente, valor_mensalidade: parseFloat(e.target.value) })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                 />
               </div>
 
@@ -839,7 +852,7 @@ export default function ClientesPage() {
                   max="31"
                   value={newCliente.dia_vencimento}
                   onChange={(e) => setNewCliente({ ...newCliente, dia_vencimento: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                 />
               </div>
             </div>
