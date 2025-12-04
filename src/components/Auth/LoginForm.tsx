@@ -34,8 +34,8 @@ export default function LoginForm() {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary-500 to-primary-700">
       <div className="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-md">
         {/* Logo */}
-        <div className="flex justify-center mb-6">
-          <div className="w-40 h-32">
+        <div className="flex justify-center mb-8">
+          <div className="w-64 h-40">
             <img
               src="/logo-lince-track-new.png"
               alt="Lince Track Logo"
@@ -44,12 +44,9 @@ export default function LoginForm() {
           </div>
         </div>
 
-        {/* Título */}
+        {/* Subtítulo */}
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">
-            Lince Track
-          </h1>
-          <p className="text-sm text-gray-500 tracking-widest uppercase">
+          <p className="text-sm text-gray-500 tracking-widest uppercase font-semibold">
             Sistema de Gestão ERP
           </p>
         </div>
