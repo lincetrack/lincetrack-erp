@@ -321,167 +321,192 @@ export default function ClientesPage() {
         </div>
       </div>
 
-      {/* Modal de Editar Cliente - Continua igual mas agora salva no Supabase */}
+      {/* Modal de Editar Cliente */}
       {showEditModal && editingCliente && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 overflow-y-auto">
-          <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl p-6 my-8">
-            <h2 className="text-2xl font-bold text-gray-800 mb-4">Editar Cliente</h2>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Nome / Razão Social *
-                </label>
-                <input
-                  type="text"
-                  value={editingCliente.nome}
-                  onChange={(e) => setEditingCliente({ ...editingCliente, nome: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  CNPJ *
-                </label>
-                <input
-                  type="text"
-                  value={editingCliente.cnpj}
-                  onChange={(e) => setEditingCliente({ ...editingCliente, cnpj: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-                  placeholder="00.000.000/0000-00"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Telefone *
-                </label>
-                <input
-                  type="text"
-                  value={editingCliente.telefone}
-                  onChange={(e) => setEditingCliente({ ...editingCliente, telefone: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-                  placeholder="44999999999"
-                />
-              </div>
-
-              <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Email
-                </label>
-                <input
-                  type="email"
-                  value={editingCliente.email || ''}
-                  onChange={(e) => setEditingCliente({ ...editingCliente, email: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-                />
-              </div>
-
-              <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Login da Plataforma
-                </label>
-                <input
-                  type="text"
-                  value={editingCliente.login_plataforma || ''}
-                  onChange={(e) => setEditingCliente({ ...editingCliente, login_plataforma: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-                  placeholder="usuario.plataforma"
-                />
-              </div>
-
-              <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Endereço *
-                </label>
-                <input
-                  type="text"
-                  value={editingCliente.endereco}
-                  onChange={(e) => setEditingCliente({ ...editingCliente, endereco: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Bairro *
-                </label>
-                <input
-                  type="text"
-                  value={editingCliente.bairro}
-                  onChange={(e) => setEditingCliente({ ...editingCliente, bairro: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  CEP
-                </label>
-                <input
-                  type="text"
-                  value={editingCliente.cep || ''}
-                  onChange={(e) => setEditingCliente({ ...editingCliente, cep: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-                  placeholder="00000-000"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Cidade *
-                </label>
-                <input
-                  type="text"
-                  value={editingCliente.cidade}
-                  onChange={(e) => setEditingCliente({ ...editingCliente, cidade: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Estado *
-                </label>
-                <select
-                  value={editingCliente.estado}
-                  onChange={(e) => setEditingCliente({ ...editingCliente, estado: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-                >
-                  {estados.map(uf => (
-                    <option key={uf} value={uf}>{uf}</option>
-                  ))}
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Valor Mensalidade *
-                </label>
-                <input
-                  type="number"
-                  step="0.01"
-                  value={editingCliente.valor_mensalidade}
-                  onChange={(e) => setEditingCliente({ ...editingCliente, valor_mensalidade: parseFloat(e.target.value) })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Dia Vencimento *
-                </label>
-                <input
-                  type="number"
-                  min="1"
-                  max="31"
-                  value={editingCliente.dia_vencimento}
-                  onChange={(e) => setEditingCliente({ ...editingCliente, dia_vencimento: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-                />
-              </div>
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-2 sm:p-4 overflow-y-auto">
+          <div className="bg-white rounded-lg shadow-xl w-full max-w-4xl max-h-[95vh] overflow-y-auto my-4 sm:my-8">
+            <div className="sticky top-0 bg-white border-b border-gray-200 p-4 sm:p-6 flex justify-between items-center">
+              <h2 className="text-xl sm:text-2xl font-bold text-gray-800">Editar Cliente</h2>
+              <button
+                onClick={() => {
+                  setShowEditModal(false)
+                  setEditingCliente(null)
+                }}
+                className="text-gray-500 hover:text-gray-700 text-2xl"
+              >
+                ✕
+              </button>
             </div>
+
+            <div className="p-4 sm:p-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                <div className="sm:col-span-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Nome / Razão Social *
+                  </label>
+                  <input
+                    type="text"
+                    value={editingCliente.nome}
+                    onChange={(e) => setEditingCliente({ ...editingCliente, nome: e.target.value })}
+                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    CPF / CNPJ *
+                  </label>
+                  <input
+                    type="text"
+                    value={editingCliente.cnpj}
+                    onChange={(e) => setEditingCliente({ ...editingCliente, cnpj: e.target.value })}
+                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                    placeholder="000.000.000-00 ou 00.000.000/0000-00"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Inscrição Estadual / RG
+                  </label>
+                  <input
+                    type="text"
+                    value={editingCliente.inscricao_estadual || ''}
+                    onChange={(e) => setEditingCliente({ ...editingCliente, inscricao_estadual: e.target.value })}
+                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                    placeholder="IE ou RG"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Telefone *
+                  </label>
+                  <input
+                    type="text"
+                    value={editingCliente.telefone}
+                    onChange={(e) => setEditingCliente({ ...editingCliente, telefone: e.target.value })}
+                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                    placeholder="44999999999"
+                  />
+                </div>
+
+                <div className="sm:col-span-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Email
+                  </label>
+                  <input
+                    type="email"
+                    value={editingCliente.email || ''}
+                    onChange={(e) => setEditingCliente({ ...editingCliente, email: e.target.value })}
+                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  />
+                </div>
+
+                <div className="sm:col-span-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Login da Plataforma
+                  </label>
+                  <input
+                    type="text"
+                    value={editingCliente.login_plataforma || ''}
+                    onChange={(e) => setEditingCliente({ ...editingCliente, login_plataforma: e.target.value })}
+                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                    placeholder="usuario.plataforma"
+                  />
+                </div>
+
+                <div className="sm:col-span-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Endereço *
+                  </label>
+                  <input
+                    type="text"
+                    value={editingCliente.endereco}
+                    onChange={(e) => setEditingCliente({ ...editingCliente, endereco: e.target.value })}
+                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Bairro *
+                  </label>
+                  <input
+                    type="text"
+                    value={editingCliente.bairro}
+                    onChange={(e) => setEditingCliente({ ...editingCliente, bairro: e.target.value })}
+                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    CEP
+                  </label>
+                  <input
+                    type="text"
+                    value={editingCliente.cep || ''}
+                    onChange={(e) => setEditingCliente({ ...editingCliente, cep: e.target.value })}
+                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                    placeholder="00000-000"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Cidade *
+                  </label>
+                  <input
+                    type="text"
+                    value={editingCliente.cidade}
+                    onChange={(e) => setEditingCliente({ ...editingCliente, cidade: e.target.value })}
+                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Estado *
+                  </label>
+                  <select
+                    value={editingCliente.estado}
+                    onChange={(e) => setEditingCliente({ ...editingCliente, estado: e.target.value })}
+                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  >
+                    {estados.map(uf => (
+                      <option key={uf} value={uf}>{uf}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Valor Mensalidade *
+                  </label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    value={editingCliente.valor_mensalidade}
+                    onChange={(e) => setEditingCliente({ ...editingCliente, valor_mensalidade: parseFloat(e.target.value) })}
+                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Dia Vencimento *
+                  </label>
+                  <input
+                    type="number"
+                    min="1"
+                    max="31"
+                    value={editingCliente.dia_vencimento}
+                    onChange={(e) => setEditingCliente({ ...editingCliente, dia_vencimento: e.target.value })}
+                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  />
+                </div>
+              </div>
 
             {/* Seção de Veículos */}
             <div className="mt-6 border-t pt-4">
@@ -626,71 +651,94 @@ export default function ClientesPage() {
               )}
             </div>
 
-            <div className="flex gap-3 mt-6">
-              <button
-                onClick={() => {
-                  setShowEditModal(false)
-                  setEditingCliente(null)
-                }}
-                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
-              >
-                Cancelar
-              </button>
-              <button
-                onClick={handleUpdateCliente}
-                className="flex-1 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
-              >
-                Salvar Alterações
-              </button>
+              <div className="sticky bottom-0 bg-white border-t border-gray-200 p-4 sm:p-6 flex flex-col sm:flex-row gap-3 mt-6">
+                <button
+                  onClick={() => {
+                    setShowEditModal(false)
+                    setEditingCliente(null)
+                  }}
+                  className="flex-1 px-4 py-2 text-sm border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
+                >
+                  Cancelar
+                </button>
+                <button
+                  onClick={handleUpdateCliente}
+                  className="flex-1 px-4 py-2 text-sm bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
+                >
+                  Salvar Alterações
+                </button>
+              </div>
             </div>
           </div>
         </div>
       )}
 
-      {/* Modal de Adicionar Cliente - Similar ao modal de edição */}
+      {/* Modal de Adicionar Cliente */}
       {showAddModal && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 overflow-y-auto">
-          <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl p-6 my-8">
-            <h2 className="text-2xl font-bold text-gray-800 mb-4">Novo Cliente</h2>
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-2 sm:p-4 overflow-y-auto">
+          <div className="bg-white rounded-lg shadow-xl w-full max-w-4xl max-h-[95vh] overflow-y-auto my-4 sm:my-8">
+            <div className="sticky top-0 bg-white border-b border-gray-200 p-4 sm:p-6 flex justify-between items-center">
+              <h2 className="text-xl sm:text-2xl font-bold text-gray-800">Novo Cliente</h2>
+              <button
+                onClick={() => setShowAddModal(false)}
+                className="text-gray-500 hover:text-gray-700 text-2xl"
+              >
+                ✕
+              </button>
+            </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Nome / Razão Social *
-                </label>
-                <input
-                  type="text"
-                  value={newCliente.nome}
-                  onChange={(e) => setNewCliente({ ...newCliente, nome: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-                />
-              </div>
+            <div className="p-4 sm:p-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                <div className="sm:col-span-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Nome / Razão Social *
+                  </label>
+                  <input
+                    type="text"
+                    value={newCliente.nome}
+                    onChange={(e) => setNewCliente({ ...newCliente, nome: e.target.value })}
+                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  />
+                </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  CNPJ *
-                </label>
-                <input
-                  type="text"
-                  value={newCliente.cnpj}
-                  onChange={(e) => setNewCliente({ ...newCliente, cnpj: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-                  placeholder="00.000.000/0000-00"
-                />
-              </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    CPF / CNPJ *
+                  </label>
+                  <input
+                    type="text"
+                    value={newCliente.cnpj}
+                    onChange={(e) => setNewCliente({ ...newCliente, cnpj: e.target.value })}
+                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                    placeholder="000.000.000-00 ou 00.000.000/0000-00"
+                  />
+                </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Telefone *
-                </label>
-                <input
-                  type="text"
-                  value={newCliente.telefone}
-                  onChange={(e) => setNewCliente({ ...newCliente, telefone: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-                  placeholder="44999999999"
-                />
-              </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Inscrição Estadual / RG
+                  </label>
+                  <input
+                    type="text"
+                    value={newCliente.inscricao_estadual || ''}
+                    onChange={(e) => setNewCliente({ ...newCliente, inscricao_estadual: e.target.value })}
+                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                    placeholder="IE ou RG"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Telefone *
+                  </label>
+                  <input
+                    type="text"
+                    value={newCliente.telefone}
+                    onChange={(e) => setNewCliente({ ...newCliente, telefone: e.target.value })}
+                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                    placeholder="44999999999"
+                  />
+                </div>
 
               <div className="md:col-span-2">
                 <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -937,21 +985,22 @@ export default function ClientesPage() {
               ) : (
                 <p className="text-sm text-gray-500 text-center py-4">Nenhum veículo cadastrado</p>
               )}
-            </div>
+              </div>
 
-            <div className="flex gap-3 mt-6">
-              <button
-                onClick={() => setShowAddModal(false)}
-                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
-              >
-                Cancelar
-              </button>
-              <button
-                onClick={handleAddCliente}
-                className="flex-1 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
-              >
-                Adicionar Cliente
-              </button>
+              <div className="sticky bottom-0 bg-white border-t border-gray-200 p-4 sm:p-6 flex flex-col sm:flex-row gap-3 mt-6">
+                <button
+                  onClick={() => setShowAddModal(false)}
+                  className="flex-1 px-4 py-2 text-sm border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
+                >
+                  Cancelar
+                </button>
+                <button
+                  onClick={handleAddCliente}
+                  className="flex-1 px-4 py-2 text-sm bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
+                >
+                  Adicionar Cliente
+                </button>
+              </div>
             </div>
           </div>
         </div>
