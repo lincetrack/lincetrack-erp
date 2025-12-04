@@ -277,8 +277,6 @@ export default function FaturasPage() {
                 <option value="todos">Todos os Status</option>
                 <option value="pendente">Pendente</option>
                 <option value="pago">Pago</option>
-                <option value="atrasado">Atrasado</option>
-                <option value="cancelado">Cancelado</option>
               </select>
             </div>
           </div>
