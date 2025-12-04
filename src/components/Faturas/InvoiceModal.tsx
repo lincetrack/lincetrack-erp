@@ -10,8 +10,8 @@ interface InvoiceModalProps {
 export default function InvoiceModal({ invoice, customer, onClose }: InvoiceModalProps) {
   if (!invoice || !customer) return null
 
-  // Calcular quantidade e valor unitário baseado nos veículos do cliente
-  const quantidadeVeiculos = customer.veiculos?.length || 1
+  // Usar quantidade de veículos salva na fatura (histórico preservado)
+  const quantidadeVeiculos = invoice.quantidade_veiculos || 1
   const valorUnitario = invoice.valor / quantidadeVeiculos
 
   const handlePrint = () => {

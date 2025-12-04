@@ -39,6 +39,7 @@ export interface Fatura {
   cliente_nome: string
   descricao: string
   valor: number
+  quantidade_veiculos: number
   data_vencimento: string
   data_emissao: string
   status: 'pendente' | 'pago' | 'atrasado' | 'cancelado'

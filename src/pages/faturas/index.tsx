@@ -64,6 +64,7 @@ export default function FaturasPage() {
             cliente_nome: cliente.nome,
             descricao: 'Loc. Equipamento e Software para Rastreamento Veicular',
             valor: cliente.valor_mensalidade,
+            quantidade_veiculos: cliente.veiculos?.length || 1,
             data_vencimento: dueDate,
             data_emissao: new Date().toISOString().split('T')[0],
             status: 'pendente',
