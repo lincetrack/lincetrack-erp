@@ -35,11 +35,13 @@ export const generateWhatsappLink = (phone: string, customerName: string, dueDat
 
 Passando para lembrar, que a mensalidade do serviço de rastreamento veicular da Lince Track referente ao período [${period}] está disponível para pagamento.
 
-Para facilitar, estou enviando o nosso pix. Caso já tenha realizado o pagamento, desconsidere esta mensagem.
+Para facilitar, estou enviando o nosso pix.
 
 CHAVE PIX CNPJ : 63061943000144
 
 Caso necessite de boleto por gentileza nos solicitar o envio.
+
+Caso já tenha efetuado o pagamento, por gentileza nos enviar o comprovante!
 
 Se precisar de qualquer ajuda ou tiver alguma dúvida, estamos à disposição!
 
