@@ -17,6 +17,10 @@ export default function RelatoriosPage() {
   const [despesas, setDespesas] = useState<Despesa[]>([])
   const [loading, setLoading] = useState(true)
 
+  // Filtros para relatório de faturas
+  const [filterCliente, setFilterCliente] = useState('todos')
+  const [filterStatus, setFilterStatus] = useState<'todos' | 'pendente' | 'pago'>('todos')
+
   useEffect(() => {
     loadData()
 
@@ -59,13 +63,96 @@ export default function RelatoriosPage() {
   }
 
   const renderFaturasReport = () => {
-    const filteredFaturas = filterByDate(faturas)
+    // Primeiro filtrar por data
+    let filteredFaturas = filterByDate(faturas)
+
+    // Depois aplicar filtro de cliente
+    if (filterCliente !== 'todos') {
+      filteredFaturas = filteredFaturas.filter(f => f.cliente_id === filterCliente)
+    }
+
+    // Por último aplicar filtro de status
+    if (filterStatus !== 'todos') {
+      filteredFaturas = filteredFaturas.filter(f => f.status === filterStatus)
+    }
+
     const totalFaturas = filteredFaturas.reduce((acc, f) => acc + f.valor, 0)
     const totalPagas = filteredFaturas.filter(f => f.status === 'pago').reduce((acc, f) => acc + f.valor, 0)
     const totalPendentes = filteredFaturas.filter(f => f.status === 'pendente').reduce((acc, f) => acc + f.valor, 0)
 
+    // Lista de clientes únicos para o filtro
+    const clientesUnicos = Array.from(new Set(faturas.map(f => f.cliente_id)))
+      .map(clienteId => {
+        const fatura = faturas.find(f => f.cliente_id === clienteId)
+        return { id: clienteId, nome: fatura?.cliente_nome || '' }
+      })
+      .sort((a, b) => a.nome.localeCompare(b.nome))
+
+    const hasActiveFilters = filterCliente !== 'todos' || filterStatus !== 'todos'
+
+    const clearFilters = () => {
+      setFilterCliente('todos')
+      setFilterStatus('todos')
+    }
+
     return (
       <div className="space-y-6">
+        {/* Filtros */}
+        <div className="bg-gray-50 p-4 rounded-lg border border-gray-200 print:hidden">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Cliente</label>
+              <select
+                value={filterCliente}
+                onChange={(e) => setFilterCliente(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white"
+              >
+                <option value="todos">Todos os Clientes</option>
+                {clientesUnicos.map(cliente => (
+                  <option key={cliente.id} value={cliente.id}>
+                    {cliente.nome}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+              <select
+                value={filterStatus}
+                onChange={(e) => setFilterStatus(e.target.value as 'todos' | 'pendente' | 'pago')}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white"
+              >
+                <option value="todos">Todos os Status</option>
+                <option value="pendente">Pendente</option>
+                <option value="pago">Pago</option>
+              </select>
+            </div>
+          </div>
+
+          {/* Badges de filtros ativos */}
+          {hasActiveFilters && (
+            <div className="flex items-center gap-2 mt-4 flex-wrap">
+              <span className="text-sm text-gray-600 font-medium">Filtros ativos:</span>
+              {filterCliente !== 'todos' && (
+                <span className="inline-flex items-center gap-1 px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm">
+                  Cliente: {clientesUnicos.find(c => c.id === filterCliente)?.nome}
+                </span>
+              )}
+              {filterStatus !== 'todos' && (
+                <span className="inline-flex items-center gap-1 px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-sm">
+                  Status: {filterStatus === 'pendente' ? 'Pendente' : 'Pago'}
+                </span>
+              )}
+              <button
+                onClick={clearFilters}
+                className="text-sm text-red-600 hover:text-red-700 underline"
+              >
+                Limpar filtros
+              </button>
+            </div>
+          )}
+        </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="bg-blue-50 p-4 rounded-lg">
             <p className="text-sm text-gray-600">Total de Faturas</p>
