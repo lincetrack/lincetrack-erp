@@ -27,46 +27,67 @@ export default function PropostaModal({ proposta, onClose }: PropostaModalProps)
   ]
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 print:p-0 print:bg-white print:block">
-      <div className="bg-white rounded-lg shadow-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto print:max-h-none print:shadow-none print:rounded-none print:max-w-none">
-        {/* Botões de ação - ocultos na impressão */}
-        <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center print:hidden z-10">
-          <h2 className="text-xl font-bold text-gray-800">Proposta Comercial #{String(proposta.numero_proposta).padStart(4, '0')}</h2>
-          <div className="flex gap-2">
-            <button
-              onClick={handlePrint}
-              className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700"
-            >
-              🖨️ Imprimir / Salvar PDF
-            </button>
-            <button
-              onClick={onClose}
-              className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
-            >
-              Fechar
-            </button>
-          </div>
-        </div>
+    <>
+      <style jsx global>{`
+        @media print {
+          body * {
+            visibility: hidden;
+          }
+          #proposta-print-content,
+          #proposta-print-content * {
+            visibility: visible;
+          }
+          #proposta-print-content {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            background: white;
+            padding: 20px;
+            margin: 0;
+            box-shadow: none;
+          }
+        }
+      `}</style>
 
-        {/* Conteúdo da Proposta */}
-        <div className="p-8 print:p-6 bg-white">
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div className="bg-white rounded-lg shadow-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+          {/* Botões de ação - ocultos na impressão */}
+          <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center print:hidden z-10">
+            <h2 className="text-xl font-bold text-gray-800">Proposta Comercial #{String(proposta.numero_proposta).padStart(4, '0')}</h2>
+            <div className="flex gap-2">
+              <button
+                onClick={handlePrint}
+                className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700"
+              >
+                🖨️ Imprimir / Salvar PDF
+              </button>
+              <button
+                onClick={onClose}
+                className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
+              >
+                Fechar
+              </button>
+            </div>
+          </div>
+
+          {/* Conteúdo da Proposta */}
+          <div id="proposta-print-content" className="p-8 bg-white">
           {/* Cabeçalho com Logo */}
           <div className="flex justify-between items-start mb-8 border-b-4 border-primary-600 pb-6 page-break-avoid">
-            <div>
-              <img
-                src="/logo.png"
-                alt="Lince Track"
-                className="h-20 mb-3 print:h-16"
-                style={{ maxWidth: '200px' }}
-                onError={(e) => {
-                  e.currentTarget.style.display = 'none'
-                  const fallback = e.currentTarget.nextElementSibling as HTMLElement
-                  if (fallback) fallback.style.display = 'block'
-                }}
-              />
-              <div style={{ display: 'none' }} className="text-3xl font-bold text-primary-600">LINCE TRACK</div>
-              <p className="text-sm text-gray-600 mt-2 font-semibold">Soluções em Rastreamento Veicular</p>
-              <p className="text-xs text-gray-500">CNPJ: 63.061.943/0001-44</p>
+            <div className="flex items-center gap-4">
+              <div className="w-28 h-20 flex items-center justify-center">
+                <img
+                  src="/logo-lince-track-new.png"
+                  alt="Lince Track Logo"
+                  className="w-full h-full object-contain"
+                />
+              </div>
+              <div>
+                <h1 className="font-bold text-xl text-gray-900">LINCE TRACK</h1>
+                <p className="text-xs text-gray-500 tracking-widest">RASTREAMENTO VEICULAR</p>
+                <p className="text-xs text-gray-500 mt-1">CNPJ: 63.061.943/0001-44</p>
+              </div>
             </div>
             <div className="text-right">
               <p className="text-sm text-gray-600">Proposta Comercial</p>
@@ -242,57 +263,9 @@ export default function PropostaModal({ proposta, onClose }: PropostaModalProps)
               <p>Telefone: (44) 99700-3426</p>
             </div>
           </div>
+          </div>
         </div>
       </div>
-
-      <style jsx global>{`
-        @media print {
-          /* Ocultar overlay e outros elementos da interface */
-          body > div:not(:has(.print\\:block)) > *:not(:last-child) {
-            display: none !important;
-          }
-
-          /* Resetar estilos do modal para impressão */
-          .fixed {
-            position: static !important;
-          }
-
-          /* Configurações de página */
-          @page {
-            margin: 1.5cm;
-            size: A4;
-          }
-
-          /* Garantir que o conteúdo seja visível */
-          body {
-            background: white !important;
-          }
-
-          /* Controle de quebras de página */
-          .page-break-before {
-            page-break-before: always;
-          }
-
-          .page-break-avoid {
-            page-break-inside: avoid;
-            break-inside: avoid;
-          }
-
-          /* Garantir que cores e backgrounds sejam impressos */
-          * {
-            -webkit-print-color-adjust: exact !important;
-            print-color-adjust: exact !important;
-            color-adjust: exact !important;
-          }
-
-          /* Garantir que imagens sejam impressas */
-          img {
-            display: block !important;
-            max-width: 100% !important;
-            page-break-inside: avoid;
-          }
-        }
-      `}</style>
-    </div>
+    </>
   )
 }
