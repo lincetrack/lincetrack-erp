@@ -30,59 +30,55 @@ export default function PropostaModal({ proposta, onClose }: PropostaModalProps)
     <>
       <style jsx global>{`
         @media print {
-          /* Remover cabeçalhos e rodapés do navegador */
           @page {
-            margin: 1.5cm;
             size: A4;
+            margin: 15mm;
           }
 
-          /* Ocultar tudo com visibility */
-          body * {
-            visibility: hidden;
+          html, body {
+            width: 210mm;
+            height: 297mm;
           }
 
-          /* Mostrar apenas o conteúdo da proposta */
-          #proposta-print-content,
-          #proposta-print-content * {
-            visibility: visible;
+          body {
+            margin: 0 !important;
+            padding: 0 !important;
           }
 
-          /* Posicionar conteúdo no topo */
-          #proposta-print-content {
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: 100%;
-            background: white;
-            padding: 20px;
-            margin: 0;
-            box-shadow: none;
-          }
-
-          /* Controle de quebras de página */
-          .page-break-before {
-            page-break-before: always;
-            break-before: page;
-          }
-
-          .page-break-avoid {
-            page-break-inside: avoid;
-            break-inside: avoid;
-          }
-
-          /* Garantir que cores e backgrounds sejam impressos */
           * {
             -webkit-print-color-adjust: exact !important;
             print-color-adjust: exact !important;
-            color-adjust: exact !important;
+          }
+
+          .print-hide {
+            display: none !important;
+          }
+
+          .proposta-print-wrapper {
+            width: 100% !important;
+            height: auto !important;
+            overflow: visible !important;
+            position: relative !important;
+            display: block !important;
+            page-break-after: auto;
+          }
+
+          .page-break-before {
+            page-break-before: always !important;
+            break-before: always !important;
+          }
+
+          .page-break-avoid {
+            page-break-inside: avoid !important;
+            break-inside: avoid !important;
           }
         }
       `}</style>
 
-      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 print-hide">
         <div className="bg-white rounded-lg shadow-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
           {/* Botões de ação - ocultos na impressão */}
-          <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center print:hidden z-10">
+          <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center print-hide z-10">
             <h2 className="text-xl font-bold text-gray-800">Proposta Comercial #{String(proposta.numero_proposta).padStart(4, '0')}</h2>
             <div className="flex gap-2">
               <button
@@ -101,7 +97,7 @@ export default function PropostaModal({ proposta, onClose }: PropostaModalProps)
           </div>
 
           {/* Conteúdo da Proposta */}
-          <div id="proposta-print-content" className="p-8 bg-white">
+          <div className="proposta-print-wrapper p-8 bg-white">
           {/* Cabeçalho com Logo */}
           <div className="flex justify-between items-start mb-8 border-b-4 border-primary-600 pb-6 page-break-avoid">
             <div className="flex items-center gap-4">
