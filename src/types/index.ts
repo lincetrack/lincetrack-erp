@@ -77,11 +77,12 @@ export interface PropostaComercial {
   numero_proposta: number
 
   // Dados do Prospect
+  tipo_pessoa: 'fisica' | 'juridica'
   prospect_nome: string
   prospect_contato: string
   prospect_email: string
   prospect_telefone: string
-  prospect_cnpj?: string
+  prospect_documento: string // CPF ou CNPJ
   prospect_cidade: string
   prospect_estado: string
 

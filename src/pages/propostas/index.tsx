@@ -13,11 +13,12 @@ export default function PropostasPage() {
   const [viewingProposta, setViewingProposta] = useState<PropostaComercial | null>(null)
 
   const [formData, setFormData] = useState<Partial<PropostaComercial>>({
+    tipo_pessoa: 'juridica',
     prospect_nome: '',
     prospect_contato: '',
     prospect_email: '',
     prospect_telefone: '',
-    prospect_cnpj: '',
+    prospect_documento: '',
     prospect_cidade: '',
     prospect_estado: 'PR',
     tipo_equipamento: 'Rastreador 4G Convencional',
@@ -104,11 +105,12 @@ export default function PropostasPage() {
     setShowModal(false)
     setEditingProposta(null)
     setFormData({
+      tipo_pessoa: 'juridica',
       prospect_nome: '',
       prospect_contato: '',
       prospect_email: '',
       prospect_telefone: '',
-      prospect_cnpj: '',
+      prospect_documento: '',
       prospect_cidade: '',
       prospect_estado: 'PR',
       tipo_equipamento: 'Rastreador 4G Convencional',
@@ -325,7 +327,22 @@ export default function PropostasPage() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Nome da Empresa *
+                        Tipo de Pessoa *
+                      </label>
+                      <select
+                        required
+                        value={formData.tipo_pessoa}
+                        onChange={(e) => setFormData({ ...formData, tipo_pessoa: e.target.value as 'fisica' | 'juridica', prospect_documento: '' })}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                      >
+                        <option value="juridica">Pessoa Jurídica (CNPJ)</option>
+                        <option value="fisica">Pessoa Física (CPF)</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        {formData.tipo_pessoa === 'fisica' ? 'Nome Completo *' : 'Nome da Empresa *'}
                       </label>
                       <input
                         type="text"
@@ -333,6 +350,7 @@ export default function PropostasPage() {
                         value={formData.prospect_nome}
                         onChange={(e) => setFormData({ ...formData, prospect_nome: e.target.value })}
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                        placeholder={formData.tipo_pessoa === 'fisica' ? 'João da Silva' : 'Empresa LTDA'}
                       />
                     </div>
 
@@ -378,14 +396,15 @@ export default function PropostasPage() {
 
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
-                        CNPJ
+                        {formData.tipo_pessoa === 'fisica' ? 'CPF *' : 'CNPJ *'}
                       </label>
                       <input
                         type="text"
-                        value={formData.prospect_cnpj}
-                        onChange={(e) => setFormData({ ...formData, prospect_cnpj: e.target.value })}
+                        required
+                        value={formData.prospect_documento}
+                        onChange={(e) => setFormData({ ...formData, prospect_documento: e.target.value })}
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-                        placeholder="00.000.000/0000-00"
+                        placeholder={formData.tipo_pessoa === 'fisica' ? '000.000.000-00' : '00.000.000/0000-00'}
                       />
                     </div>
 

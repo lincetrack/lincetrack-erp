@@ -7,11 +7,12 @@ CREATE TABLE IF NOT EXISTS propostas_comerciais (
     numero_proposta INTEGER NOT NULL UNIQUE,
 
     -- Dados do Prospect
+    tipo_pessoa VARCHAR(10) NOT NULL DEFAULT 'juridica' CHECK (tipo_pessoa IN ('fisica', 'juridica')),
     prospect_nome VARCHAR(255) NOT NULL,
     prospect_contato VARCHAR(255) NOT NULL,
     prospect_email VARCHAR(255) NOT NULL,
     prospect_telefone VARCHAR(20) NOT NULL,
-    prospect_cnpj VARCHAR(18),
+    prospect_documento VARCHAR(18) NOT NULL,
     prospect_cidade VARCHAR(100) NOT NULL,
     prospect_estado VARCHAR(2) NOT NULL,
 
@@ -60,8 +61,10 @@ CREATE TRIGGER trigger_propostas_updated_at
     EXECUTE FUNCTION update_propostas_updated_at();
 
 -- Comentários na tabela e colunas
-COMMENT ON TABLE propostas_comerciais IS 'Armazena propostas comerciais enviadas a clientes prospectivos';
+COMMENT ON TABLE propostas_comerciais IS 'Armazena propostas comerciais enviadas a clientes prospectivos (PF ou PJ)';
 COMMENT ON COLUMN propostas_comerciais.numero_proposta IS 'Número sequencial da proposta para referência';
+COMMENT ON COLUMN propostas_comerciais.tipo_pessoa IS 'Tipo de pessoa: fisica (CPF) ou juridica (CNPJ)';
+COMMENT ON COLUMN propostas_comerciais.prospect_documento IS 'CPF (11 dígitos) ou CNPJ (14 dígitos) do prospect';
 COMMENT ON COLUMN propostas_comerciais.status IS 'Status da proposta: pendente, enviada, aprovada ou recusada';
 COMMENT ON COLUMN propostas_comerciais.data_validade IS 'Data de validade da proposta comercial';
 COMMENT ON COLUMN propostas_comerciais.prazo_permanencia IS 'Prazo de permanência em meses';

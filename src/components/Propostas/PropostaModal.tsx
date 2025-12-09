@@ -76,10 +76,14 @@ export default function PropostaModal({ proposta, onClose }: PropostaModalProps)
 
           {/* Dados do Cliente */}
           <div className="mb-8">
-            <h3 className="text-lg font-bold text-gray-800 mb-3 bg-gray-100 p-2 rounded">DADOS DO CLIENTE</h3>
+            <h3 className="text-lg font-bold text-gray-800 mb-3 bg-gray-100 p-2 rounded">
+              DADOS DO CLIENTE - {proposta.tipo_pessoa === 'fisica' ? 'PESSOA FÍSICA' : 'PESSOA JURÍDICA'}
+            </h3>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <p className="text-sm text-gray-600">Empresa</p>
+                <p className="text-sm text-gray-600">
+                  {proposta.tipo_pessoa === 'fisica' ? 'Nome Completo' : 'Empresa'}
+                </p>
                 <p className="font-semibold text-gray-800">{proposta.prospect_nome}</p>
               </div>
               <div>
@@ -94,12 +98,12 @@ export default function PropostaModal({ proposta, onClose }: PropostaModalProps)
                 <p className="text-sm text-gray-600">Telefone</p>
                 <p className="font-semibold text-gray-800">{proposta.prospect_telefone}</p>
               </div>
-              {proposta.prospect_cnpj && (
-                <div>
-                  <p className="text-sm text-gray-600">CNPJ</p>
-                  <p className="font-semibold text-gray-800">{proposta.prospect_cnpj}</p>
-                </div>
-              )}
+              <div>
+                <p className="text-sm text-gray-600">
+                  {proposta.tipo_pessoa === 'fisica' ? 'CPF' : 'CNPJ'}
+                </p>
+                <p className="font-semibold text-gray-800">{proposta.prospect_documento}</p>
+              </div>
               <div>
                 <p className="text-sm text-gray-600">Localização</p>
                 <p className="font-semibold text-gray-800">{proposta.prospect_cidade}/{proposta.prospect_estado}</p>
