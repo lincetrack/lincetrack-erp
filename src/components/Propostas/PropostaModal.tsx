@@ -39,7 +39,6 @@ export default function PropostaModal({ proposta, onClose }: PropostaModalProps)
       const imgHeight = canvas.height
       const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight)
       const imgX = (pdfWidth - imgWidth * ratio) / 2
-      const imgY = 0
 
       // Calcular quantas páginas são necessárias
       const pageHeight = pdfHeight
@@ -205,17 +204,25 @@ export default function PropostaModal({ proposta, onClose }: PropostaModalProps)
             </div>
           </div>
 
+          {/* Observações - LOGO ABAIXO DOS VALORES */}
+          {proposta.observacoes && (
+            <div className="mb-2">
+              <h3 className="text-sm font-bold text-gray-800 mb-1.5 bg-gray-100 p-1.5 rounded">OBSERVAÇÕES</h3>
+              <p className="text-xs text-gray-700 whitespace-pre-wrap">{proposta.observacoes}</p>
+            </div>
+          )}
+
           {/* SEÇÃO: Instalação e Sinal - COMPACTA */}
           <div className="mb-2">
             <h3 className="text-sm font-bold text-gray-800 mb-1.5 bg-gray-100 p-1.5 rounded">INSTALAÇÃO E SINAL GPS/GPRS</h3>
             <div className="bg-blue-50 p-2 rounded text-xs space-y-1.5">
               <p className="text-gray-700">
-                <strong>🔧 Instalação Profissional:</strong> Equipamento posicionado em locais ocultos (bancos, porta-malas, painéis),
-                garantindo discrição e proteção máxima contra remoção.
+                <strong>🔧 Instalação Profissional:</strong> Equipamento estrategicamente posicionado em locais ocultos do veículo,
+                garantindo máxima discrição e proteção contra tentativas de remoção.
               </p>
               <p className="text-gray-700">
-                <strong>📡 Cobertura Premium:</strong> Tecnologia multi-operadora (até 5 operadoras simultâneas) via Algar Telecom,
-                garantindo rastreamento ininterrupto em todo território nacional.
+                <strong>📡 Cobertura Premium:</strong> Tecnologia multi-operadora com conexão simultânea de até 5 operadoras diferentes via Algar Telecom,
+                garantindo rastreamento em todo território nacional.
               </p>
             </div>
           </div>
@@ -233,22 +240,17 @@ export default function PropostaModal({ proposta, onClose }: PropostaModalProps)
             </div>
           </div>
 
-          {/* Informações Adicionais - COMPACTO */}
+          {/* Informações Adicionais - COMPLETAS EM 2 COLUNAS */}
           <div className="mb-2">
             <h3 className="text-sm font-bold text-gray-800 mb-1.5 bg-gray-100 p-1.5 rounded">INFORMAÇÕES IMPORTANTES</h3>
-            <div className="text-xs text-gray-700 space-y-0.5">
-              <p>• <strong>Comodato:</strong> Equipamento em comodato durante contrato</p>
-              <p>• <strong>Suporte 24/7:</strong> Central disponível 24h/dia, 7 dias/semana</p>
-              <p>• <strong>App Mobile:</strong> Acesso via iOS e Android incluído</p>
+            <div className="grid grid-cols-2 gap-x-3 gap-y-0.5 text-xs text-gray-700">
+              <p>• <strong>Comodato:</strong> Equipamento em regime de comodato durante o período de contrato</p>
+              <p>• <strong>Cobertura Nacional:</strong> Sistema funciona em todo território nacional via GPS/GPRS</p>
+              <p>• <strong>Suporte 24/7:</strong> Central de atendimento disponível 24 horas por dia, 7 dias por semana</p>
+              <p>• <strong>Aplicativo Mobile:</strong> Acesso via aplicativo iOS e Android incluído</p>
+              <p>• <strong>Garantia:</strong> Equipamento com garantia contra defeitos de fabricação</p>
             </div>
           </div>
-
-          {proposta.observacoes && (
-            <div className="mb-2">
-              <h3 className="text-sm font-bold text-gray-800 mb-1.5 bg-gray-100 p-1.5 rounded">OBSERVAÇÕES</h3>
-              <p className="text-xs text-gray-700 whitespace-pre-wrap">{proposta.observacoes}</p>
-            </div>
-          )}
 
           {/* Rodapé - COMPACTO */}
           <div className="mt-3 pt-2 border-t border-gray-300">
