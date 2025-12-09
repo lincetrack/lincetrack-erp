@@ -30,59 +30,33 @@ export default function PropostaModal({ proposta, onClose }: PropostaModalProps)
     <>
       <style jsx global>{`
         @media print {
-          /* Reset de layout para impressão */
-          body {
-            margin: 0 !important;
-            padding: 0 !important;
-            width: 100% !important;
-            height: auto !important;
-          }
-
-          /* Ocultar tudo exceto o modal de proposta */
-          body > *:not(#proposta-modal-root) {
-            display: none !important;
-          }
-
-          /* Garantir que o root seja visível e ocupe todo o espaço */
-          #proposta-modal-root {
-            display: block !important;
-            position: static !important;
-            width: 100% !important;
-            height: auto !important;
-            overflow: visible !important;
-            background: white !important;
-            padding: 0 !important;
-            margin: 0 !important;
-            z-index: 0 !important;
-          }
-
-          /* Remover estilos de modal do container interno */
-          #proposta-modal-root > div {
-            position: static !important;
-            width: 100% !important;
-            max-width: 100% !important;
-            height: auto !important;
-            max-height: none !important;
-            overflow: visible !important;
-            box-shadow: none !important;
-            border-radius: 0 !important;
-            margin: 0 !important;
-            padding: 0 !important;
-            background: white !important;
-          }
-
-          /* Conteúdo de impressão */
-          #proposta-print-content {
-            padding: 0 !important;
-            margin: 0 !important;
-            width: 100% !important;
-            height: auto !important;
-          }
-
-          /* Configurações de página */
+          /* Remover cabeçalhos e rodapés do navegador */
           @page {
             margin: 1.5cm;
             size: A4;
+          }
+
+          /* Ocultar tudo com visibility */
+          body * {
+            visibility: hidden;
+          }
+
+          /* Mostrar apenas o conteúdo da proposta */
+          #proposta-print-content,
+          #proposta-print-content * {
+            visibility: visible;
+          }
+
+          /* Posicionar conteúdo no topo */
+          #proposta-print-content {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            background: white;
+            padding: 20px;
+            margin: 0;
+            box-shadow: none;
           }
 
           /* Controle de quebras de página */
@@ -102,15 +76,10 @@ export default function PropostaModal({ proposta, onClose }: PropostaModalProps)
             print-color-adjust: exact !important;
             color-adjust: exact !important;
           }
-
-          /* Ocultar elementos da interface */
-          .print\\:hidden {
-            display: none !important;
-          }
         }
       `}</style>
 
-      <div id="proposta-modal-root" className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
         <div className="bg-white rounded-lg shadow-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
           {/* Botões de ação - ocultos na impressão */}
           <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center print:hidden z-10">
