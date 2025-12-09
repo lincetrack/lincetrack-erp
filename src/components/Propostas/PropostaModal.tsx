@@ -47,6 +47,29 @@ export default function PropostaModal({ proposta, onClose }: PropostaModalProps)
             margin: 0;
             box-shadow: none;
           }
+
+          /* Configurações de página */
+          @page {
+            margin: 1.5cm;
+            size: A4;
+          }
+
+          /* Controle de quebras de página */
+          .page-break-before {
+            page-break-before: always;
+          }
+
+          .page-break-avoid {
+            page-break-inside: avoid;
+            break-inside: avoid;
+          }
+
+          /* Garantir que cores e backgrounds sejam impressos */
+          * {
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+            color-adjust: exact !important;
+          }
         }
       `}</style>
 
