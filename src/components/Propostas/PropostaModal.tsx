@@ -23,7 +23,7 @@ export default function PropostaModal({ proposta, onClose }: PropostaModalProps)
     'Relatório de deslocamento e Paradas',
     'Cobertura via GPS em todo território nacional',
     'Mapas com sobreposição de camadas',
-    'Envio de alertas via WhatsApp e Email'
+    'Envio de alertas via Aplicativo'
   ]
 
   return (
