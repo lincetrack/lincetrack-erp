@@ -100,11 +100,11 @@ export default function PropostaModal({ proposta, onClose }: PropostaModalProps)
         </div>
 
         {/* Conteúdo da Proposta */}
-        <div ref={contentRef} className="p-8 bg-white">
+        <div ref={contentRef} className="p-6 bg-white" style={{ maxWidth: '800px', fontSize: '13px' }}>
           {/* Cabeçalho com Logo */}
-          <div className="flex justify-between items-start mb-8 border-b-4 border-primary-600 pb-6 page-break-avoid">
-            <div className="flex items-center gap-4">
-              <div className="w-28 h-20 flex items-center justify-center">
+          <div className="flex justify-between items-start mb-4 border-b-2 border-primary-600 pb-3">
+            <div className="flex items-center gap-3">
+              <div className="w-20 h-14 flex items-center justify-center">
                 <img
                   src="/logo-lince-track-new.png"
                   alt="Lince Track Logo"
@@ -112,183 +112,149 @@ export default function PropostaModal({ proposta, onClose }: PropostaModalProps)
                 />
               </div>
               <div>
-                <h1 className="font-bold text-xl text-gray-900">LINCE TRACK</h1>
-                <p className="text-xs text-gray-500 tracking-widest">RASTREAMENTO VEICULAR</p>
-                <p className="text-xs text-gray-500 mt-1">CNPJ: 63.061.943/0001-44</p>
+                <h1 className="font-bold text-base text-gray-900">LINCE TRACK</h1>
+                <p className="text-xs text-gray-500 tracking-wider">RASTREAMENTO VEICULAR</p>
+                <p className="text-xs text-gray-500">CNPJ: 63.061.943/0001-44</p>
               </div>
             </div>
             <div className="text-right">
-              <p className="text-sm text-gray-600">Proposta Comercial</p>
-              <p className="text-2xl font-bold text-gray-800">#{String(proposta.numero_proposta).padStart(4, '0')}</p>
-              <p className="text-xs text-gray-500 mt-1">Data: {formatDate(proposta.created_at.split('T')[0])}</p>
+              <p className="text-xs text-gray-600">Proposta Comercial</p>
+              <p className="text-xl font-bold text-gray-800">#{String(proposta.numero_proposta).padStart(4, '0')}</p>
+              <p className="text-xs text-gray-500">Data: {formatDate(proposta.created_at.split('T')[0])}</p>
               <p className="text-xs text-gray-500">Validade: {formatDate(proposta.data_validade)}</p>
             </div>
           </div>
 
           {/* Dados do Cliente */}
-          <div className="mb-6 page-break-avoid">
-            <h3 className="text-lg font-bold text-gray-800 mb-3 bg-gray-100 p-2 rounded">
+          <div className="mb-3">
+            <h3 className="text-sm font-bold text-gray-800 mb-2 bg-gray-100 p-1.5 rounded">
               DADOS DO CLIENTE - {proposta.tipo_pessoa === 'fisica' ? 'PESSOA FÍSICA' : 'PESSOA JURÍDICA'}
             </h3>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-3 gap-2 text-xs">
               <div>
-                <p className="text-sm text-gray-600">
-                  {proposta.tipo_pessoa === 'fisica' ? 'Nome Completo' : 'Empresa'}
-                </p>
+                <p className="text-gray-600">{proposta.tipo_pessoa === 'fisica' ? 'Nome' : 'Empresa'}</p>
                 <p className="font-semibold text-gray-800">{proposta.prospect_nome}</p>
               </div>
               <div>
-                <p className="text-sm text-gray-600">Contato</p>
+                <p className="text-gray-600">Contato</p>
                 <p className="font-semibold text-gray-800">{proposta.prospect_contato}</p>
               </div>
               <div>
-                <p className="text-sm text-gray-600">Email</p>
-                <p className="font-semibold text-gray-800">{proposta.prospect_email}</p>
-              </div>
-              <div>
-                <p className="text-sm text-gray-600">Telefone</p>
+                <p className="text-gray-600">Telefone</p>
                 <p className="font-semibold text-gray-800">{proposta.prospect_telefone}</p>
               </div>
               <div>
-                <p className="text-sm text-gray-600">
-                  {proposta.tipo_pessoa === 'fisica' ? 'CPF' : 'CNPJ'}
-                </p>
+                <p className="text-gray-600">{proposta.tipo_pessoa === 'fisica' ? 'CPF' : 'CNPJ'}</p>
                 <p className="font-semibold text-gray-800">{proposta.prospect_documento}</p>
               </div>
               <div>
-                <p className="text-sm text-gray-600">Localização</p>
+                <p className="text-gray-600">Localização</p>
                 <p className="font-semibold text-gray-800">{proposta.prospect_cidade}/{proposta.prospect_estado}</p>
+              </div>
+              <div>
+                <p className="text-gray-600">Email</p>
+                <p className="font-semibold text-gray-800 text-xs">{proposta.prospect_email}</p>
               </div>
             </div>
           </div>
 
           {/* Detalhes da Proposta */}
-          <div className="mb-6 page-break-avoid">
-            <h3 className="text-lg font-bold text-gray-800 mb-3 bg-gray-100 p-2 rounded">DETALHES DA PROPOSTA</h3>
+          <div className="mb-3">
+            <h3 className="text-sm font-bold text-gray-800 mb-2 bg-gray-100 p-1.5 rounded">DETALHES DA PROPOSTA</h3>
 
-            <div className="bg-primary-50 p-6 rounded-lg mb-4">
-              <div className="grid grid-cols-2 gap-4">
+            <div className="bg-primary-50 p-3 rounded mb-2">
+              <div className="grid grid-cols-4 gap-2 text-xs">
                 <div>
-                  <p className="text-sm text-gray-600">Equipamento</p>
+                  <p className="text-gray-600">Equipamento</p>
                   <p className="font-bold text-gray-800">{proposta.tipo_equipamento}</p>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-600">Plano</p>
+                  <p className="text-gray-600">Plano</p>
                   <p className="font-bold text-gray-800">{proposta.plano}</p>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-600">Quantidade de Veículos</p>
-                  <p className="font-bold text-gray-800">{proposta.quantidade_veiculos} veículo(s)</p>
+                  <p className="text-gray-600">Veículos</p>
+                  <p className="font-bold text-gray-800">{proposta.quantidade_veiculos}</p>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-600">Valor Unitário</p>
+                  <p className="text-gray-600">Valor Unit.</p>
                   <p className="font-bold text-gray-800">{formatCurrency(proposta.valor_mensal)}/mês</p>
                 </div>
               </div>
             </div>
 
-            <div className="bg-white border-2 border-primary-600 p-6 rounded-lg">
-              <div className="grid grid-cols-2 gap-6">
+            <div className="bg-white border-2 border-primary-600 p-3 rounded">
+              <div className="grid grid-cols-3 gap-2 text-xs">
                 <div>
-                  <p className="text-sm text-gray-600">Valor Mensal Total</p>
-                  <p className="text-3xl font-bold text-primary-600">
+                  <p className="text-gray-600">Valor Mensal Total</p>
+                  <p className="text-xl font-bold text-primary-600">
                     {formatCurrency(proposta.valor_mensal * proposta.quantidade_veiculos)}
                   </p>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-600">Instalação</p>
-                  <p className="text-3xl font-bold text-green-600">
+                  <p className="text-gray-600">Instalação</p>
+                  <p className="text-xl font-bold text-green-600">
                     {proposta.instalacao_gratuita ? 'GRATUITA' : formatCurrency(proposta.valor_instalacao || 0)}
                   </p>
                 </div>
-              </div>
-              <div className="mt-4 pt-4 border-t border-gray-200">
-                <p className="text-sm text-gray-600">Prazo de Permanência</p>
-                <p className="text-lg font-bold text-gray-800">{proposta.prazo_permanencia} meses</p>
-              </div>
-            </div>
-          </div>
-
-          {/* SEÇÃO: Instalação e Sinal */}
-          <div className="mb-6 page-break-avoid">
-            <h3 className="text-lg font-bold text-gray-800 mb-3 bg-gray-100 p-2 rounded">INSTALAÇÃO E SINAL GPS/GPRS</h3>
-            <div className="bg-blue-50 p-6 rounded-lg space-y-4">
-              <div>
-                <h4 className="font-bold text-gray-800 mb-2 flex items-center gap-2">
-                  <span className="text-primary-600">🔧</span> Instalação Profissional
-                </h4>
-                <p className="text-sm text-gray-700 leading-relaxed">
-                  Trabalhamos com as melhores práticas do mercado para garantir a eficiência e discrição do sistema.
-                  Utilizamos materiais de alta qualidade e técnicas avançadas de instalação. O equipamento é
-                  estrategicamente posicionado em locais ocultos do veículo, como parte interna dos bancos,
-                  porta-malas, painéis ou outros compartimentos seguros, fugindo do padrão convencional.
-                  Essa abordagem maximiza a proteção contra tentativas de remoção e garante o funcionamento
-                  contínuo do rastreador.
-                </p>
-              </div>
-              <div>
-                <h4 className="font-bold text-gray-800 mb-2 flex items-center gap-2">
-                  <span className="text-green-600">📡</span> Cobertura de Sinal Premium
-                </h4>
-                <p className="text-sm text-gray-700 leading-relaxed">
-                  Utilizamos a infraestrutura da Algar Telecom com tecnologia multi-operadora, contando com
-                  conexão simultânea de até 5 operadoras diferentes. Isso significa que seu veículo estará
-                  sempre conectado, mesmo em áreas remotas ou de difícil cobertura. Essa redundância elimina
-                  praticamente todos os pontos cegos e áreas sem cobertura, proporcionando rastreamento
-                  ininterrupto em todo o território nacional com a máxima confiabilidade.
-                </p>
+                <div>
+                  <p className="text-gray-600">Permanência</p>
+                  <p className="text-xl font-bold text-gray-800">{proposta.prazo_permanencia} meses</p>
+                </div>
               </div>
             </div>
           </div>
 
-          {/* Recursos Incluídos */}
-          <div className="mb-6 page-break-before">
-            <h3 className="text-lg font-bold text-gray-800 mb-3 bg-gray-100 p-2 rounded">RECURSOS INCLUÍDOS</h3>
-            <div className="grid grid-cols-1 gap-2">
+          {/* SEÇÃO: Instalação e Sinal - COMPACTA */}
+          <div className="mb-2">
+            <h3 className="text-sm font-bold text-gray-800 mb-1.5 bg-gray-100 p-1.5 rounded">INSTALAÇÃO E SINAL GPS/GPRS</h3>
+            <div className="bg-blue-50 p-2 rounded text-xs space-y-1.5">
+              <p className="text-gray-700">
+                <strong>🔧 Instalação Profissional:</strong> Equipamento posicionado em locais ocultos (bancos, porta-malas, painéis),
+                garantindo discrição e proteção máxima contra remoção.
+              </p>
+              <p className="text-gray-700">
+                <strong>📡 Cobertura Premium:</strong> Tecnologia multi-operadora (até 5 operadoras simultâneas) via Algar Telecom,
+                garantindo rastreamento ininterrupto em todo território nacional.
+              </p>
+            </div>
+          </div>
+
+          {/* Recursos Incluídos - COMPACTO */}
+          <div className="mb-2">
+            <h3 className="text-sm font-bold text-gray-800 mb-1.5 bg-gray-100 p-1.5 rounded">RECURSOS INCLUÍDOS</h3>
+            <div className="grid grid-cols-2 gap-x-3 gap-y-0.5 text-xs">
               {recursos.map((recurso, index) => (
-                <div key={index} className="flex items-start gap-2">
-                  <span className="text-green-600 font-bold text-lg">✓</span>
-                  <p className="text-sm text-gray-700">{recurso}</p>
+                <div key={index} className="flex items-start gap-1">
+                  <span className="text-green-600 font-bold">✓</span>
+                  <p className="text-gray-700 leading-tight">{recurso}</p>
                 </div>
               ))}
             </div>
           </div>
 
-          {/* Informações Adicionais */}
-          <div className="mb-6 page-break-avoid">
-            <h3 className="text-lg font-bold text-gray-800 mb-3 bg-gray-100 p-2 rounded">INFORMAÇÕES IMPORTANTES</h3>
-            <div className="text-sm text-gray-700 space-y-2">
-              <p>• <strong>Comodato:</strong> Equipamento em regime de comodato durante o período de contrato</p>
-              <p>• <strong>Cobertura Nacional:</strong> Sistema funciona em todo território nacional via GPS/GPRS</p>
-              <p>• <strong>Suporte 24/7:</strong> Central de atendimento disponível 24 horas por dia, 7 dias por semana</p>
-              <p>• <strong>Aplicativo Mobile:</strong> Acesso via aplicativo iOS e Android incluído</p>
-              <p>• <strong>Garantia:</strong> Equipamento com garantia contra defeitos de fabricação</p>
+          {/* Informações Adicionais - COMPACTO */}
+          <div className="mb-2">
+            <h3 className="text-sm font-bold text-gray-800 mb-1.5 bg-gray-100 p-1.5 rounded">INFORMAÇÕES IMPORTANTES</h3>
+            <div className="text-xs text-gray-700 space-y-0.5">
+              <p>• <strong>Comodato:</strong> Equipamento em comodato durante contrato</p>
+              <p>• <strong>Suporte 24/7:</strong> Central disponível 24h/dia, 7 dias/semana</p>
+              <p>• <strong>App Mobile:</strong> Acesso via iOS e Android incluído</p>
             </div>
           </div>
 
           {proposta.observacoes && (
-            <div className="mb-6 page-break-avoid">
-              <h3 className="text-lg font-bold text-gray-800 mb-3 bg-gray-100 p-2 rounded">OBSERVAÇÕES</h3>
-              <p className="text-sm text-gray-700 whitespace-pre-wrap">{proposta.observacoes}</p>
+            <div className="mb-2">
+              <h3 className="text-sm font-bold text-gray-800 mb-1.5 bg-gray-100 p-1.5 rounded">OBSERVAÇÕES</h3>
+              <p className="text-xs text-gray-700 whitespace-pre-wrap">{proposta.observacoes}</p>
             </div>
           )}
 
-          {/* Rodapé */}
-          <div className="mt-12 pt-6 border-t-2 border-gray-300 page-break-avoid">
-            <div className="text-center mb-6">
-              <p className="text-sm text-gray-600 mb-2">
-                Estamos à disposição para esclarecer quaisquer dúvidas sobre nossa proposta.
-              </p>
-              <p className="text-sm font-semibold text-gray-800">
-                Aguardamos ansiosamente seu retorno para iniciarmos nossa parceria!
-              </p>
-            </div>
-
-            <div className="text-center text-sm text-gray-600">
-              <p className="font-bold text-gray-800 mb-1">LINCE TRACK RASTREAMENTO</p>
-              <p>CNPJ: 63.061.943/0001-44</p>
-              <p>Email: comercial@lincetrack.com.br</p>
-              <p>Telefone: (44) 99700-3426</p>
+          {/* Rodapé - COMPACTO */}
+          <div className="mt-3 pt-2 border-t border-gray-300">
+            <div className="text-center text-xs text-gray-600">
+              <p className="font-bold text-gray-800 mb-0.5">LINCE TRACK RASTREAMENTO</p>
+              <p>CNPJ: 63.061.943/0001-44 | Email: comercial@lincetrack.com.br | Tel: (44) 99700-3426</p>
             </div>
           </div>
         </div>
