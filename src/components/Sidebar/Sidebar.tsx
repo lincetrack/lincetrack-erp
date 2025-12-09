@@ -8,6 +8,7 @@ const menuItems = [
   { name: 'Despesas', path: '/despesas', icon: '💸' },
   { name: 'Clientes', path: '/clientes', icon: '👥' },
   { name: 'Aniversariantes', path: '/aniversariantes', icon: '🎂' },
+  { name: 'Propostas', path: '/propostas', icon: '📋' },
   { name: 'Relatórios', path: '/relatorios', icon: '📈' },
 ]
 
