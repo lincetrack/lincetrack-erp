@@ -1,5 +1,8 @@
 import { PropostaComercial } from '@/types'
 import { formatCurrency, formatDate } from '@/utils/formatters'
+import { useRef } from 'react'
+import jsPDF from 'jspdf'
+import html2canvas from 'html2canvas'
 
 interface PropostaModalProps {
   proposta: PropostaComercial
@@ -7,8 +10,56 @@ interface PropostaModalProps {
 }
 
 export default function PropostaModal({ proposta, onClose }: PropostaModalProps) {
-  const handlePrint = () => {
-    window.print()
+  const contentRef = useRef<HTMLDivElement>(null)
+
+  const handleDownloadPDF = async () => {
+    if (!contentRef.current) return
+
+    try {
+      // Capturar o conteúdo como imagem
+      const canvas = await html2canvas(contentRef.current, {
+        scale: 2,
+        useCORS: true,
+        logging: false,
+        backgroundColor: '#ffffff'
+      })
+
+      const imgData = canvas.toDataURL('image/png')
+
+      // Criar PDF
+      const pdf = new jsPDF({
+        orientation: 'portrait',
+        unit: 'mm',
+        format: 'a4'
+      })
+
+      const pdfWidth = pdf.internal.pageSize.getWidth()
+      const pdfHeight = pdf.internal.pageSize.getHeight()
+      const imgWidth = canvas.width
+      const imgHeight = canvas.height
+      const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight)
+      const imgX = (pdfWidth - imgWidth * ratio) / 2
+      const imgY = 0
+
+      // Calcular quantas páginas são necessárias
+      const pageHeight = pdfHeight
+      const totalPages = Math.ceil((imgHeight * ratio) / pageHeight)
+
+      for (let i = 0; i < totalPages; i++) {
+        if (i > 0) {
+          pdf.addPage()
+        }
+
+        const position = -(pageHeight * i)
+        pdf.addImage(imgData, 'PNG', imgX, position, imgWidth * ratio, imgHeight * ratio)
+      }
+
+      // Baixar o PDF
+      pdf.save(`Proposta_${String(proposta.numero_proposta).padStart(4, '0')}.pdf`)
+    } catch (error) {
+      console.error('Erro ao gerar PDF:', error)
+      alert('Erro ao gerar PDF. Por favor, tente novamente.')
+    }
   }
 
   const recursos = [
@@ -27,77 +78,29 @@ export default function PropostaModal({ proposta, onClose }: PropostaModalProps)
   ]
 
   return (
-    <>
-      <style jsx global>{`
-        @media print {
-          @page {
-            size: A4;
-            margin: 15mm;
-          }
-
-          html, body {
-            width: 210mm;
-            height: 297mm;
-          }
-
-          body {
-            margin: 0 !important;
-            padding: 0 !important;
-          }
-
-          * {
-            -webkit-print-color-adjust: exact !important;
-            print-color-adjust: exact !important;
-          }
-
-          .print-hide {
-            display: none !important;
-          }
-
-          .proposta-print-wrapper {
-            width: 100% !important;
-            height: auto !important;
-            overflow: visible !important;
-            position: relative !important;
-            display: block !important;
-            page-break-after: auto;
-          }
-
-          .page-break-before {
-            page-break-before: always !important;
-            break-before: always !important;
-          }
-
-          .page-break-avoid {
-            page-break-inside: avoid !important;
-            break-inside: avoid !important;
-          }
-        }
-      `}</style>
-
-      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 print-hide">
-        <div className="bg-white rounded-lg shadow-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
-          {/* Botões de ação - ocultos na impressão */}
-          <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center print-hide z-10">
-            <h2 className="text-xl font-bold text-gray-800">Proposta Comercial #{String(proposta.numero_proposta).padStart(4, '0')}</h2>
-            <div className="flex gap-2">
-              <button
-                onClick={handlePrint}
-                className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700"
-              >
-                🖨️ Imprimir / Salvar PDF
-              </button>
-              <button
-                onClick={onClose}
-                className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
-              >
-                Fechar
-              </button>
-            </div>
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-lg shadow-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+        {/* Botões de ação */}
+        <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center z-10">
+          <h2 className="text-xl font-bold text-gray-800">Proposta Comercial #{String(proposta.numero_proposta).padStart(4, '0')}</h2>
+          <div className="flex gap-2">
+            <button
+              onClick={handleDownloadPDF}
+              className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700"
+            >
+              📥 Baixar PDF
+            </button>
+            <button
+              onClick={onClose}
+              className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
+            >
+              Fechar
+            </button>
           </div>
+        </div>
 
-          {/* Conteúdo da Proposta */}
-          <div className="proposta-print-wrapper p-8 bg-white">
+        {/* Conteúdo da Proposta */}
+        <div ref={contentRef} className="p-8 bg-white">
           {/* Cabeçalho com Logo */}
           <div className="flex justify-between items-start mb-8 border-b-4 border-primary-600 pb-6 page-break-avoid">
             <div className="flex items-center gap-4">
@@ -288,9 +291,8 @@ export default function PropostaModal({ proposta, onClose }: PropostaModalProps)
               <p>Telefone: (44) 99700-3426</p>
             </div>
           </div>
-          </div>
         </div>
       </div>
-    </>
+    </div>
   )
 }

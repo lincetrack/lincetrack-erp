@@ -15,7 +15,8 @@
       "Bash(git branch:*)",
       "Bash(git push:*)",
       "Bash(git commit:*)",
-      "Bash(dir:*)"
+      "Bash(dir:*)",
+      "Bash(npm install:*)"
     ],
     "deny": [],
     "ask": []
