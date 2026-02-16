@@ -52,6 +52,9 @@ export default function DashboardPage() {
 
   const resultado = receitaMensal - despesasMes
 
+  // Total de veículos cadastrados
+  const totalVeiculos = clientes.reduce((acc, c) => acc + (c.veiculos?.length || 0), 0)
+
   // Faturas recentes
   const faturasRecentes = faturas
     .filter(f => f.data_vencimento.startsWith(mesAtual))
@@ -79,12 +82,18 @@ export default function DashboardPage() {
           <p className="text-xs md:text-sm text-gray-600 capitalize">{mesNome}</p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3 md:gap-6">
           <StatsCard
             title="Clientes Ativos"
             value={clientesAtivos.toString()}
             icon="👥"
             trend={clientesAtivos > 0 ? { value: 8, isPositive: true } : undefined}
+          />
+          <StatsCard
+            title="Total de Veículos"
+            value={totalVeiculos.toString()}
+            icon="🚗"
+            trend={totalVeiculos > 0 ? { value: 5, isPositive: true } : undefined}
           />
           <StatsCard
             title="Receita Mensal"
