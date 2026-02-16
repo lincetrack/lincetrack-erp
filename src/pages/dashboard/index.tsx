@@ -8,6 +8,15 @@ import { faturaService } from '@/services/faturaService'
 import { despesaService } from '@/services/despesaService'
 
 export default function DashboardPage() {
+  // Helper para obter o mês atual no formato YYYY-MM
+  const getCurrentMonth = () => {
+    const now = new Date()
+    const year = now.getFullYear()
+    const month = String(now.getMonth() + 1).padStart(2, '0')
+    return `${year}-${month}`
+  }
+
+  const [selectedMonth, setSelectedMonth] = useState(getCurrentMonth())
   const [clientes, setClientes] = useState<Cliente[]>([])
   const [faturas, setFaturas] = useState<Fatura[]>([])
   const [despesas, setDespesas] = useState<Despesa[]>([])
@@ -41,13 +50,12 @@ export default function DashboardPage() {
     .filter(c => c.ativo)
     .reduce((acc, c) => acc + c.valor_mensalidade, 0)
 
-  const mesAtual = new Date().toISOString().slice(0, 7)
   const faturasPendentes = faturas
-    .filter(f => f.status === 'pendente' && f.data_vencimento.startsWith(mesAtual))
+    .filter(f => f.status === 'pendente' && f.data_vencimento.startsWith(selectedMonth))
     .reduce((acc, f) => acc + f.valor, 0)
 
   const despesasMes = despesas
-    .filter(d => d.data_vencimento.startsWith(mesAtual))
+    .filter(d => d.data_vencimento.startsWith(selectedMonth))
     .reduce((acc, d) => acc + d.valor, 0)
 
   const resultado = receitaMensal - despesasMes
@@ -57,13 +65,13 @@ export default function DashboardPage() {
 
   // Faturas recentes
   const faturasRecentes = faturas
-    .filter(f => f.data_vencimento.startsWith(mesAtual))
+    .filter(f => f.data_vencimento.startsWith(selectedMonth))
     .sort((a, b) => new Date(b.data_vencimento).getTime() - new Date(a.data_vencimento).getTime())
     .slice(0, 3)
 
   // Despesas recentes
   const despesasRecentes = despesas
-    .filter(d => d.data_vencimento.startsWith(mesAtual))
+    .filter(d => d.data_vencimento.startsWith(selectedMonth))
     .sort((a, b) => new Date(b.data_vencimento).getTime() - new Date(a.data_vencimento).getTime())
     .slice(0, 3)
 
@@ -72,14 +80,24 @@ export default function DashboardPage() {
     return `${day}/${month}/${year}`
   }
 
-  const mesNome = new Date().toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })
+  // Formatar nome do mês selecionado
+  const [year, month] = selectedMonth.split('-')
+  const mesNome = new Date(parseInt(year), parseInt(month) - 1, 1).toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })
 
   return (
     <MainLayout>
       <div className="space-y-4 md:space-y-6">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
           <h1 className="text-xl md:text-3xl font-bold text-gray-800">Dashboard</h1>
-          <p className="text-xs md:text-sm text-gray-600 capitalize">{mesNome}</p>
+          <div className="flex items-center gap-3">
+            <p className="text-xs md:text-sm text-gray-600 capitalize">{mesNome}</p>
+            <input
+              type="month"
+              value={selectedMonth}
+              onChange={(e) => setSelectedMonth(e.target.value)}
+              className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 text-sm"
+            />
+          </div>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3 md:gap-6">
