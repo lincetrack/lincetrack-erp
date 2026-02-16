@@ -44,34 +44,47 @@ export default function DashboardPage() {
     }
   }
 
-  // Calcular métricas
-  const clientesAtivos = clientes.filter(c => c.ativo).length
-  const receitaMensal = clientes
-    .filter(c => c.ativo)
-    .reduce((acc, c) => acc + c.valor_mensalidade, 0)
+  // Calcular métricas baseadas no mês selecionado (dados históricos)
+  // Filtrar faturas do mês selecionado
+  const faturasDoMes = faturas.filter(f => f.data_vencimento.startsWith(selectedMonth))
 
-  const faturasPendentes = faturas
-    .filter(f => f.status === 'pendente' && f.data_vencimento.startsWith(selectedMonth))
+  // Clientes ativos no mês = clientes únicos que tiveram faturas naquele mês
+  const clientesAtivosNoMes = new Set(faturasDoMes.map(f => f.cliente_id))
+  const clientesAtivos = clientesAtivosNoMes.size
+
+  // Receita mensal = soma de TODAS as faturas do mês (pagas + pendentes)
+  const receitaMensal = faturasDoMes.reduce((acc, f) => acc + f.valor, 0)
+
+  // Faturas pendentes = soma apenas das faturas pendentes do mês
+  const faturasPendentes = faturasDoMes
+    .filter(f => f.status === 'pendente')
     .reduce((acc, f) => acc + f.valor, 0)
 
+  // Despesas do mês
   const despesasMes = despesas
     .filter(d => d.data_vencimento.startsWith(selectedMonth))
     .reduce((acc, d) => acc + d.valor, 0)
 
-  const resultado = receitaMensal - despesasMes
+  // Resultado = Receita (faturas pagas) - Despesas (pagas)
+  const receitaPaga = faturasDoMes
+    .filter(f => f.status === 'pago')
+    .reduce((acc, f) => acc + f.valor, 0)
+  const despesasPagas = despesas
+    .filter(d => d.data_vencimento.startsWith(selectedMonth) && d.status === 'pago')
+    .reduce((acc, d) => acc + d.valor, 0)
+  const resultado = receitaPaga - despesasPagas
 
-  // Total de veículos cadastrados
-  const totalVeiculos = clientes.reduce((acc, c) => acc + (c.veiculos?.length || 0), 0)
+  // Total de veículos do mês = soma dos veículos registrados nas faturas daquele mês
+  const totalVeiculos = faturasDoMes.reduce((acc, f) => acc + (f.quantidade_veiculos || 0), 0)
 
-  // Faturas recentes
-  const faturasRecentes = faturas
-    .filter(f => f.data_vencimento.startsWith(selectedMonth))
+  // Faturas recentes do mês selecionado
+  const faturasRecentes = faturasDoMes
     .sort((a, b) => new Date(b.data_vencimento).getTime() - new Date(a.data_vencimento).getTime())
     .slice(0, 3)
 
-  // Despesas recentes
-  const despesasRecentes = despesas
-    .filter(d => d.data_vencimento.startsWith(selectedMonth))
+  // Despesas recentes do mês selecionado
+  const despesasDoMes = despesas.filter(d => d.data_vencimento.startsWith(selectedMonth))
+  const despesasRecentes = despesasDoMes
     .sort((a, b) => new Date(b.data_vencimento).getTime() - new Date(a.data_vencimento).getTime())
     .slice(0, 3)
 
