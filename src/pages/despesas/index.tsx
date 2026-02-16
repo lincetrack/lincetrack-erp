@@ -146,6 +146,10 @@ export default function DespesasPage() {
     }
   }
 
+  const handlePrintList = () => {
+    window.print()
+  }
+
   const filteredDespesas = despesas.filter(d => d.data_vencimento.startsWith(selectedMonth))
 
   const totalPendente = filteredDespesas
@@ -166,8 +170,16 @@ export default function DespesasPage() {
           </div>
         )}
 
+        {/* Cabeçalho para impressão */}
+        <div className="hidden print:block mb-4">
+          <h1 className="text-2xl font-bold text-gray-800 mb-2">Relatório de Despesas</h1>
+          <p className="text-sm text-gray-600">
+            Período: {selectedMonth.split('-')[1]}/{selectedMonth.split('-')[0]}
+          </p>
+        </div>
+
         {/* Header */}
-        <div className="flex justify-between items-center">
+        <div className="flex justify-between items-center print:hidden">
           <h1 className="text-3xl font-bold text-gray-800">Gestão de Despesas</h1>
           <div className="flex gap-3">
             <input
@@ -176,6 +188,12 @@ export default function DespesasPage() {
               onChange={(e) => setSelectedMonth(e.target.value)}
               className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
             />
+            <button
+              onClick={handlePrintList}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors"
+            >
+              🖨️ Imprimir Lista
+            </button>
             <button
               onClick={() => setShowAddModal(true)}
               className="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors"
@@ -228,7 +246,7 @@ export default function DespesasPage() {
                   <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Status
                   </th>
-                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider print:hidden">
                     Ações
                   </th>
                 </tr>
@@ -272,7 +290,7 @@ export default function DespesasPage() {
                           {despesa.status === 'pago' ? '✓ PAGO' : '⏱ PENDENTE'}
                         </button>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-center">
+                      <td className="px-6 py-4 whitespace-nowrap text-center print:hidden">
                         <div className="flex justify-center gap-2">
                           <button
                             onClick={() => handleEditDespesa(despesa)}

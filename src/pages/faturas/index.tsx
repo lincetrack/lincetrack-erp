@@ -167,6 +167,10 @@ export default function FaturasPage() {
     }
   }
 
+  const handlePrintList = () => {
+    window.print()
+  }
+
   // Filtrar faturas por mês, nome do cliente, status e dia de vencimento
   const filteredFaturas = faturas
     .filter(f => f.data_vencimento.startsWith(selectedMonth))
@@ -224,16 +228,33 @@ export default function FaturasPage() {
           </div>
         )}
 
+        {/* Cabeçalho para impressão */}
+        <div className="hidden print:block mb-4">
+          <h1 className="text-2xl font-bold text-gray-800 mb-2">Relatório de Faturas</h1>
+          <p className="text-sm text-gray-600">
+            Período: {selectedMonth.split('-')[1]}/{selectedMonth.split('-')[0]}
+          </p>
+          {searchTerm && <p className="text-sm text-gray-600">Cliente filtrado: {searchTerm}</p>}
+          {filterStatus !== 'todos' && <p className="text-sm text-gray-600">Status: {filterStatus === 'pendente' ? 'Pendente' : 'Pago'}</p>}
+          {filterDay !== 'todos' && <p className="text-sm text-gray-600">Dia de vencimento: {filterDay}</p>}
+        </div>
+
         {/* Header */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 print:hidden">
           <h1 className="text-3xl font-bold text-gray-800">Gestão de Faturas</h1>
-          <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+          <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto print:hidden">
             <input
               type="month"
               value={selectedMonth}
               onChange={(e) => setSelectedMonth(e.target.value)}
               className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
             />
+            <button
+              onClick={handlePrintList}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center justify-center gap-2 transition-colors"
+            >
+              🖨️ Imprimir Lista
+            </button>
             <button
               onClick={generateInvoices}
               className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center justify-center gap-2 transition-colors"
@@ -244,7 +265,7 @@ export default function FaturasPage() {
         </div>
 
         {/* Barra de Filtros */}
-        <div className="bg-white rounded-lg shadow-md p-4">
+        <div className="bg-white rounded-lg shadow-md p-4 print:hidden">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -357,10 +378,10 @@ export default function FaturasPage() {
                   <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Status
                   </th>
-                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider print:hidden">
                     WhatsApp
                   </th>
-                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider print:hidden">
                     Ações
                   </th>
                 </tr>
@@ -396,14 +417,14 @@ export default function FaturasPage() {
                           {fatura.status === 'pago' ? '✓ PAGO' : '⏱ PENDENTE'}
                         </button>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-center">
+                      <td className="px-6 py-4 whitespace-nowrap text-center print:hidden">
                         {fatura.enviado_whatsapp ? (
                           <span className="text-green-600 text-xs">✓ Enviado</span>
                         ) : (
                           <span className="text-gray-400 text-xs">Não enviado</span>
                         )}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-center">
+                      <td className="px-6 py-4 whitespace-nowrap text-center print:hidden">
                         <div className="flex justify-center gap-2">
                           <button
                             onClick={() => handleSendWhatsapp(fatura)}

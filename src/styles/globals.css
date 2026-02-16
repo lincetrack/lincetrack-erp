@@ -118,4 +118,35 @@ body {
   tfoot {
     display: table-footer-group;
   }
+
+  /* Remover limitações de altura e scroll em todos os elementos */
+  .overflow-x-auto,
+  .overflow-y-auto,
+  .overflow-auto {
+    overflow: visible !important;
+  }
+
+  .max-h-96,
+  .max-h-screen,
+  [class*="max-h-"] {
+    max-height: none !important;
+  }
+
+  /* Garantir que todos os elementos sejam visíveis */
+  * {
+    overflow: visible !important;
+    max-height: none !important;
+  }
+
+  /* Exceção para tabelas que precisam manter estrutura */
+  table {
+    overflow: visible !important;
+  }
+
+  /* Garantir que divs com scroll expandam completamente */
+  div[class*="overflow"],
+  div[class*="max-h"] {
+    max-height: none !important;
+    overflow: visible !important;
+  }
 }
