@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Etiquetas de Instalação — Lince Track</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      background: #f0f0f0;
+    }
+
+    /* ── Instruções visíveis apenas na tela ── */
+    .instrucoes {
+      max-width: 700px;
+      margin: 24px auto 20px;
+      padding: 16px 20px;
+      background: #fff;
+      border-left: 4px solid #1a56db;
+      border-radius: 4px;
+      font-size: 14px;
+      color: #333;
+    }
+    .instrucoes h2 {
+      font-size: 16px;
+      color: #1a56db;
+      margin-bottom: 8px;
+    }
+    .instrucoes ul {
+      padding-left: 18px;
+      line-height: 1.8;
+    }
+    .instrucoes .btn-print {
+      display: inline-block;
+      margin-top: 12px;
+      padding: 9px 22px;
+      background: #1a56db;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      cursor: pointer;
+      text-decoration: none;
+    }
+    .instrucoes .btn-print:hover {
+      background: #1e429f;
+    }
+
+    /* ── Folha A4 na tela ── */
+    .pagina {
+      width: 21cm;
+      min-height: 29.7cm;
+      margin: 0 auto 24px;
+      background: #fff;
+      padding: 0.6cm 0.55cm;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: repeat(3, 8cm);
+      gap: 0.4cm;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+    }
+
+    /* ── Etiqueta individual ── */
+    .etiqueta {
+      width: 9.85cm;
+      height: 8cm;
+      border: 1.5px solid #222;
+      border-radius: 4px;
+      padding: 5px 7px 4px;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      overflow: hidden;
+    }
+
+    /* Cabeçalho: logo + título */
+    .etiqueta-header {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      border-bottom: 1.5px solid #222;
+      padding-bottom: 4px;
+      margin-bottom: 2px;
+    }
+    .etiqueta-header img {
+      height: 32px;
+      width: auto;
+      object-fit: contain;
+      flex-shrink: 0;
+    }
+    .etiqueta-header .titulo {
+      font-size: 10px;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #111;
+      line-height: 1.2;
+    }
+    .etiqueta-header .subtitulo {
+      font-size: 8px;
+      color: #555;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+
+    /* Linhas de campo */
+    .campo {
+      display: flex;
+      align-items: baseline;
+      gap: 4px;
+      font-size: 8.5px;
+    }
+    .campo label {
+      font-weight: bold;
+      white-space: nowrap;
+      color: #111;
+      flex-shrink: 0;
+      min-width: 58px;
+    }
+    .campo .linha {
+      flex: 1;
+      border-bottom: 1px solid #555;
+      height: 11px;
+    }
+
+    /* Linha dupla de campos (Ano + Placa lado a lado) */
+    .campo-duplo {
+      display: flex;
+      gap: 8px;
+    }
+    .campo-duplo .campo {
+      flex: 1;
+    }
+    .campo-duplo .campo:first-child label {
+      min-width: 28px;
+    }
+    .campo-duplo .campo:last-child label {
+      min-width: 30px;
+    }
+
+    /* Checkbox bloqueio */
+    .campo-check {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 8.5px;
+      font-weight: bold;
+      color: #111;
+    }
+    .campo-check .opcoes {
+      display: flex;
+      gap: 10px;
+      font-weight: normal;
+    }
+    .campo-check .opcao {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+    }
+    .campo-check .box {
+      width: 11px;
+      height: 11px;
+      border: 1.5px solid #333;
+      display: inline-block;
+      flex-shrink: 0;
+      border-radius: 2px;
+    }
+
+    /* Campo observações (ocupa restante) */
+    .campo-obs {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      gap: 2px;
+    }
+    .campo-obs label {
+      font-size: 8.5px;
+      font-weight: bold;
+      color: #111;
+    }
+    .campo-obs .area-obs {
+      flex: 1;
+      border: 1px solid #888;
+      border-radius: 2px;
+      min-height: 18px;
+    }
+
+    /* ── Estilos de impressão ── */
+    @media print {
+      @page {
+        size: A4 portrait;
+        margin: 0;
+      }
+
+      body {
+        background: #fff;
+      }
+
+      .instrucoes {
+        display: none;
+      }
+
+      .pagina {
+        width: 21cm;
+        height: 29.7cm;
+        margin: 0;
+        padding: 0.6cm 0.55cm;
+        box-shadow: none;
+        page-break-after: always;
+        break-after: page;
+      }
+
+      .etiqueta {
+        border: 1.5px solid #000;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Instruções na tela -->
+  <div class="instrucoes">
+    <h2>Etiquetas de Instalação — Lince Track</h2>
+    <ul>
+      <li>Cada página A4 contém <strong>6 etiquetas</strong> (2 colunas × 3 linhas)</li>
+      <li>Tamanho de cada etiqueta: <strong>10 × 8 cm</strong></li>
+      <li>Para imprimir, clique no botão abaixo ou pressione <strong>Ctrl + P</strong></li>
+      <li>Selecione <strong>"Sem margens"</strong> ou <strong>"Margens mínimas"</strong> na caixa de diálogo de impressão</li>
+      <li>Desative "Cabeçalhos e rodapés" se necessário</li>
+    </ul>
+    <button class="btn-print" onclick="window.print()">🖨️ Imprimir Etiquetas</button>
+  </div>
+
+  <!-- ════════════ PÁGINA 1 ════════════ -->
+  <div class="pagina">
+
+    <!-- Etiqueta 1 -->
+    <div class="etiqueta">
+      <div class="etiqueta-header">
+        <img src="logo-lince-track.svg" alt="Logo Lince Track" />
+        <div>
+          <div class="titulo">Ficha de Instalação</div>
+          <div class="subtitulo">Rastreamento Veicular</div>
+        </div>
+      </div>
+      <div class="campo">
+        <label>Cliente:</label>
+        <div class="linha"></div>
+      </div>
+      <div class="campo">
+        <label>Veículo:</label>
+        <div class="linha"></div>
+      </div>
+      <div class="campo-duplo">
+        <div class="campo">
+          <label>Ano:</label>
+          <div class="linha"></div>
+        </div>
+        <div class="campo">
+          <label>Placa:</label>
+          <div class="linha"></div>
+        </div>
+      </div>
+      <div class="campo-check">
+        Com Bloqueio?
+        <div class="opcoes">
+          <span class="opcao"><span class="box"></span> Sim</span>
+          <span class="opcao"><span class="box"></span> Não</span>
+        </div>
+      </div>
+      <div class="campo-obs">
+        <label>Observações:</label>
+        <div class="area-obs"></div>
+      </div>
+    </div>
+
+    <!-- Etiqueta 2 -->
+    <div class="etiqueta">
+      <div class="etiqueta-header">
+        <img src="logo-lince-track.svg" alt="Logo Lince Track" />
+        <div>
+          <div class="titulo">Ficha de Instalação</div>
+          <div class="subtitulo">Rastreamento Veicular</div>
+        </div>
+      </div>
+      <div class="campo">
+        <label>Cliente:</label>
+        <div class="linha"></div>
+      </div>
+      <div class="campo">
+        <label>Veículo:</label>
+        <div class="linha"></div>
+      </div>
+      <div class="campo-duplo">
+        <div class="campo">
+          <label>Ano:</label>
+          <div class="linha"></div>
+        </div>
+        <div class="campo">
+          <label>Placa:</label>
+          <div class="linha"></div>
+        </div>
+      </div>
+      <div class="campo-check">
+        Com Bloqueio?
+        <div class="opcoes">
+          <span class="opcao"><span class="box"></span> Sim</span>
+          <span class="opcao"><span class="box"></span> Não</span>
+        </div>
+      </div>
+      <div class="campo-obs">
+        <label>Observações:</label>
+        <div class="area-obs"></div>
+      </div>
+    </div>
+
+    <!-- Etiqueta 3 -->
+    <div class="etiqueta">
+      <div class="etiqueta-header">
+        <img src="logo-lince-track.svg" alt="Logo Lince Track" />
+        <div>
+          <div class="titulo">Ficha de Instalação</div>
+          <div class="subtitulo">Rastreamento Veicular</div>
+        </div>
+      </div>
+      <div class="campo">
+        <label>Cliente:</label>
+        <div class="linha"></div>
+      </div>
+      <div class="campo">
+        <label>Veículo:</label>
+        <div class="linha"></div>
+      </div>
+      <div class="campo-duplo">
+        <div class="campo">
+          <label>Ano:</label>
+          <div class="linha"></div>
+        </div>
+        <div class="campo">
+          <label>Placa:</label>
+          <div class="linha"></div>
+        </div>
+      </div>
+      <div class="campo-check">
+        Com Bloqueio?
+        <div class="opcoes">
+          <span class="opcao"><span class="box"></span> Sim</span>
+          <span class="opcao"><span class="box"></span> Não</span>
+        </div>
+      </div>
+      <div class="campo-obs">
+        <label>Observações:</label>
+        <div class="area-obs"></div>
+      </div>
+    </div>
+
+    <!-- Etiqueta 4 -->
+    <div class="etiqueta">
+      <div class="etiqueta-header">
+        <img src="logo-lince-track.svg" alt="Logo Lince Track" />
+        <div>
+          <div class="titulo">Ficha de Instalação</div>
+          <div class="subtitulo">Rastreamento Veicular</div>
+        </div>
+      </div>
+      <div class="campo">
+        <label>Cliente:</label>
+        <div class="linha"></div>
+      </div>
+      <div class="campo">
+        <label>Veículo:</label>
+        <div class="linha"></div>
+      </div>
+      <div class="campo-duplo">
+        <div class="campo">
+          <label>Ano:</label>
+          <div class="linha"></div>
+        </div>
+        <div class="campo">
+          <label>Placa:</label>
+          <div class="linha"></div>
+        </div>
+      </div>
+      <div class="campo-check">
+        Com Bloqueio?
+        <div class="opcoes">
+          <span class="opcao"><span class="box"></span> Sim</span>
+          <span class="opcao"><span class="box"></span> Não</span>
+        </div>
+      </div>
+      <div class="campo-obs">
+        <label>Observações:</label>
+        <div class="area-obs"></div>
+      </div>
+    </div>
+
+    <!-- Etiqueta 5 -->
+    <div class="etiqueta">
+      <div class="etiqueta-header">
+        <img src="logo-lince-track.svg" alt="Logo Lince Track" />
+        <div>
+          <div class="titulo">Ficha de Instalação</div>
+          <div class="subtitulo">Rastreamento Veicular</div>
+        </div>
+      </div>
+      <div class="campo">
+        <label>Cliente:</label>
+        <div class="linha"></div>
+      </div>
+      <div class="campo">
+        <label>Veículo:</label>
+        <div class="linha"></div>
+      </div>
+      <div class="campo-duplo">
+        <div class="campo">
+          <label>Ano:</label>
+          <div class="linha"></div>
+        </div>
+        <div class="campo">
+          <label>Placa:</label>
+          <div class="linha"></div>
+        </div>
+      </div>
+      <div class="campo-check">
+        Com Bloqueio?
+        <div class="opcoes">
+          <span class="opcao"><span class="box"></span> Sim</span>
+          <span class="opcao"><span class="box"></span> Não</span>
+        </div>
+      </div>
+      <div class="campo-obs">
+        <label>Observações:</label>
+        <div class="area-obs"></div>
+      </div>
+    </div>
+
+    <!-- Etiqueta 6 -->
+    <div class="etiqueta">
+      <div class="etiqueta-header">
+        <img src="logo-lince-track.svg" alt="Logo Lince Track" />
+        <div>
+          <div class="titulo">Ficha de Instalação</div>
+          <div class="subtitulo">Rastreamento Veicular</div>
+        </div>
+      </div>
+      <div class="campo">
+        <label>Cliente:</label>
+        <div class="linha"></div>
+      </div>
+      <div class="campo">
+        <label>Veículo:</label>
+        <div class="linha"></div>
+      </div>
+      <div class="campo-duplo">
+        <div class="campo">
+          <label>Ano:</label>
+          <div class="linha"></div>
+        </div>
+        <div class="campo">
+          <label>Placa:</label>
+          <div class="linha"></div>
+        </div>
+      </div>
+      <div class="campo-check">
+        Com Bloqueio?
+        <div class="opcoes">
+          <span class="opcao"><span class="box"></span> Sim</span>
+          <span class="opcao"><span class="box"></span> Não</span>
+        </div>
+      </div>
+      <div class="campo-obs">
+        <label>Observações:</label>
+        <div class="area-obs"></div>
+      </div>
+    </div>
+
+  </div>
+  <!-- Fim da Página 1 -->
+
+</body>
+</html>
