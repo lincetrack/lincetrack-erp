@@ -17,7 +17,7 @@ export default function Navbar() {
 
         <div className="flex-1 text-center lg:text-left">
           <h2 className="text-base md:text-xl font-semibold text-gray-800">
-            Bem-vindo ao Sistema
+            Sistema de Gestão Empresarial - Lince Track
           </h2>
         </div>
 

@@ -53,14 +53,13 @@ export default function Sidebar() {
         ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
       `}>
         <div className="p-6 flex items-center justify-between">
-          <div className="flex items-center gap-3">
+          <Link href="/dashboard" onClick={closeMenu}>
             <img
               src="/logo-lince-track-new.png"
               alt="Lince Track Logo"
-              className="w-10 h-10 object-contain"
+              className="w-20 h-20 object-contain cursor-pointer hover:opacity-80 transition-opacity"
             />
-            <h1 className="text-xl font-bold text-primary-600">Lince Track</h1>
-          </div>
+          </Link>
         </div>
         <nav className="mt-6">
           {menuItems.map((item) => (
