@@ -419,26 +419,26 @@ export default function FaturasPage() {
         </div>
 
         {/* Cards de Resumo */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <h3 className="text-lg font-semibold text-gray-700 mb-2">Total de Faturas</h3>
-            <p className="text-3xl font-bold text-primary-600">{filteredFaturas.length}</p>
-            <p className="text-sm text-gray-600 mt-2">no período selecionado</p>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6">
+          <div className="bg-white rounded-lg shadow-md p-3 md:p-6">
+            <h3 className="text-xs md:text-lg font-semibold text-gray-700 mb-1 md:mb-2">Total</h3>
+            <p className="text-xl md:text-3xl font-bold text-primary-600">{filteredFaturas.length}</p>
+            <p className="text-xs text-gray-600 mt-1">no período</p>
           </div>
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <h3 className="text-lg font-semibold text-gray-700 mb-2">Pendentes</h3>
-            <p className="text-3xl font-bold text-yellow-600">{formatCurrency(totalPendente)}</p>
-            <p className="text-sm text-gray-600 mt-2">{filteredFaturas.filter(f => f.status === 'pendente').length} fatura(s)</p>
+          <div className="bg-white rounded-lg shadow-md p-3 md:p-6">
+            <h3 className="text-xs md:text-lg font-semibold text-gray-700 mb-1 md:mb-2">Pendentes</h3>
+            <p className="text-base md:text-3xl font-bold text-yellow-600">{formatCurrency(totalPendente)}</p>
+            <p className="text-xs text-gray-600 mt-1">{filteredFaturas.filter(f => f.status === 'pendente').length} fatura(s)</p>
           </div>
-          <div className="bg-white rounded-lg shadow-md p-6 border-l-4 border-red-500">
-            <h3 className="text-lg font-semibold text-gray-700 mb-2">Atrasadas</h3>
-            <p className="text-3xl font-bold text-red-600">{formatCurrency(totalAtrasado)}</p>
-            <p className="text-sm text-gray-600 mt-2">{filteredFaturas.filter(f => f.status === 'atrasado').length} fatura(s) vencida(s)</p>
+          <div className="bg-white rounded-lg shadow-md p-3 md:p-6 border-l-4 border-red-500">
+            <h3 className="text-xs md:text-lg font-semibold text-gray-700 mb-1 md:mb-2">Atrasadas</h3>
+            <p className="text-base md:text-3xl font-bold text-red-600">{formatCurrency(totalAtrasado)}</p>
+            <p className="text-xs text-gray-600 mt-1">{filteredFaturas.filter(f => f.status === 'atrasado').length} vencida(s)</p>
           </div>
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <h3 className="text-lg font-semibold text-gray-700 mb-2">Pagas</h3>
-            <p className="text-3xl font-bold text-green-600">{formatCurrency(totalPago)}</p>
-            <p className="text-sm text-gray-600 mt-2">{filteredFaturas.filter(f => f.status === 'pago').length} fatura(s)</p>
+          <div className="bg-white rounded-lg shadow-md p-3 md:p-6">
+            <h3 className="text-xs md:text-lg font-semibold text-gray-700 mb-1 md:mb-2">Pagas</h3>
+            <p className="text-base md:text-3xl font-bold text-green-600">{formatCurrency(totalPago)}</p>
+            <p className="text-xs text-gray-600 mt-1">{filteredFaturas.filter(f => f.status === 'pago').length} fatura(s)</p>
           </div>
         </div>
 

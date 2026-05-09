@@ -179,24 +179,24 @@ export default function DespesasPage() {
         </div>
 
         {/* Header */}
-        <div className="flex justify-between items-center print:hidden">
-          <h1 className="text-3xl font-bold text-gray-800">Gestão de Despesas</h1>
-          <div className="flex gap-3">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 print:hidden">
+          <h1 className="text-xl md:text-3xl font-bold text-gray-800">Gestão de Despesas</h1>
+          <div className="flex flex-wrap gap-2 w-full sm:w-auto">
             <input
               type="month"
               value={selectedMonth}
               onChange={(e) => setSelectedMonth(e.target.value)}
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+              className="flex-1 sm:flex-none px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 text-sm"
             />
             <button
               onClick={handlePrintList}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors"
+              className="flex-1 sm:flex-none bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-lg flex items-center justify-center gap-1 transition-colors text-sm"
             >
-              🖨️ Imprimir Lista
+              🖨️ Imprimir
             </button>
             <button
               onClick={() => setShowAddModal(true)}
-              className="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors"
+              className="flex-1 sm:flex-none bg-primary-600 hover:bg-primary-700 text-white px-3 py-2 rounded-lg flex items-center justify-center gap-1 transition-colors text-sm"
             >
               ➕ Nova Despesa
             </button>
@@ -204,30 +204,30 @@ export default function DespesasPage() {
         </div>
 
         {/* Cards de Resumo */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <h3 className="text-lg font-semibold text-gray-700 mb-2">Total do Mês</h3>
-            <p className="text-3xl font-bold text-primary-600">{formatCurrency(totalPendente + totalPago)}</p>
-            <p className="text-sm text-gray-600 mt-2">{filteredDespesas.length} despesa{filteredDespesas.length !== 1 ? 's' : ''} no período</p>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6">
+          <div className="bg-white rounded-lg shadow-md p-3 md:p-6">
+            <h3 className="text-xs md:text-lg font-semibold text-gray-700 mb-1 md:mb-2">Total do Mês</h3>
+            <p className="text-base md:text-3xl font-bold text-primary-600">{formatCurrency(totalPendente + totalPago)}</p>
+            <p className="text-xs text-gray-600 mt-1">{filteredDespesas.length} despesa(s)</p>
           </div>
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <h3 className="text-lg font-semibold text-gray-700 mb-2">Pendente</h3>
-            <p className="text-3xl font-bold text-red-600">{formatCurrency(totalPendente)}</p>
-            <p className="text-sm text-gray-600 mt-2">{filteredDespesas.filter(d => d.status === 'pendente').length} a pagar</p>
+          <div className="bg-white rounded-lg shadow-md p-3 md:p-6">
+            <h3 className="text-xs md:text-lg font-semibold text-gray-700 mb-1 md:mb-2">Pendente</h3>
+            <p className="text-base md:text-3xl font-bold text-red-600">{formatCurrency(totalPendente)}</p>
+            <p className="text-xs text-gray-600 mt-1">{filteredDespesas.filter(d => d.status === 'pendente').length} a pagar</p>
           </div>
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <h3 className="text-lg font-semibold text-gray-700 mb-2">Pagas</h3>
-            <p className="text-3xl font-bold text-green-600">{formatCurrency(totalPago)}</p>
-            <p className="text-sm text-gray-600 mt-2">{filteredDespesas.filter(d => d.status === 'pago').length} quitadas</p>
+          <div className="bg-white rounded-lg shadow-md p-3 md:p-6">
+            <h3 className="text-xs md:text-lg font-semibold text-gray-700 mb-1 md:mb-2">Pagas</h3>
+            <p className="text-base md:text-3xl font-bold text-green-600">{formatCurrency(totalPago)}</p>
+            <p className="text-xs text-gray-600 mt-1">{filteredDespesas.filter(d => d.status === 'pago').length} quitadas</p>
           </div>
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <h3 className="text-lg font-semibold text-gray-700 mb-2">Saldo Pendente</h3>
-            <p className="text-3xl font-bold text-orange-600">
+          <div className="bg-white rounded-lg shadow-md p-3 md:p-6">
+            <h3 className="text-xs md:text-lg font-semibold text-gray-700 mb-1 md:mb-2">% Quitado</h3>
+            <p className="text-base md:text-3xl font-bold text-orange-600">
               {totalPendente + totalPago > 0
                 ? `${Math.round((totalPago / (totalPendente + totalPago)) * 100)}%`
                 : '0%'}
             </p>
-            <p className="text-sm text-gray-600 mt-2">do total já quitado</p>
+            <p className="text-xs text-gray-600 mt-1">do total já quitado</p>
           </div>
         </div>
 

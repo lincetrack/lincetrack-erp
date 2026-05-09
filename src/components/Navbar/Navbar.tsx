@@ -15,9 +15,9 @@ export default function Navbar() {
         {/* Espaço para o botão hamburger no mobile */}
         <div className="lg:hidden w-10"></div>
 
-        <div className="flex-1 text-center lg:text-left">
-          <h2 className="text-base md:text-xl font-semibold text-gray-800">
-            Sistema de Gestão Empresarial - Lince Track
+        <div className="flex-1 text-center lg:text-left min-w-0 px-2">
+          <h2 className="text-sm md:text-lg font-semibold text-gray-800 truncate">
+            <span className="hidden sm:inline">Sistema de Gestão Empresarial — </span>Lince Track
           </h2>
         </div>
 

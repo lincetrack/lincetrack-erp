@@ -816,8 +816,8 @@ export default function RelatoriosPage() {
         ) : (
           <div className="space-y-6">
             <div className="bg-white rounded-lg shadow-md p-6 print:shadow-none print:p-0">
-              <div className="flex justify-between items-center mb-6 print:hidden">
-                <h2 className="text-2xl font-bold text-gray-800">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-6 print:hidden">
+                <h2 className="text-lg sm:text-2xl font-bold text-gray-800">
                   {reportType === 'faturas' && 'Relatório de Faturas'}
                   {reportType === 'despesas' && 'Relatório de Despesas'}
                   {reportType === 'clientes' && 'Relatório de Clientes'}
@@ -825,16 +825,16 @@ export default function RelatoriosPage() {
                   {reportType === 'assistencia' && 'Relatório de Assistência Veicular'}
                   {reportType === 'inadimplentes' && 'Relatório de Inadimplência'}
                 </h2>
-                <div className="flex gap-2 print:hidden">
+                <div className="flex gap-2 print:hidden shrink-0">
                   <button
                     onClick={() => setReportType(null)}
-                    className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+                    className="px-3 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50"
                   >
-                    Voltar
+                    ← Voltar
                   </button>
                   <button
                     onClick={handlePrint}
-                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                    className="px-3 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700"
                   >
                     🖨️ Imprimir
                   </button>
@@ -842,23 +842,23 @@ export default function RelatoriosPage() {
               </div>
 
               {(reportType === 'faturas' || reportType === 'despesas' || reportType === 'financeiro') && (
-                <div className="flex gap-4 mb-6 print:hidden">
-                  <div>
+                <div className="flex flex-col sm:flex-row gap-3 mb-6 print:hidden">
+                  <div className="flex-1 sm:flex-none">
                     <label className="block text-sm font-medium text-gray-700 mb-1">Data Inicial</label>
                     <input
                       type="date"
                       value={startDate}
                       onChange={(e) => setStartDate(e.target.value)}
-                      className="px-3 py-2 border border-gray-300 rounded-lg"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
                     />
                   </div>
-                  <div>
+                  <div className="flex-1 sm:flex-none">
                     <label className="block text-sm font-medium text-gray-700 mb-1">Data Final</label>
                     <input
                       type="date"
                       value={endDate}
                       onChange={(e) => setEndDate(e.target.value)}
-                      className="px-3 py-2 border border-gray-300 rounded-lg"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
                     />
                   </div>
                 </div>

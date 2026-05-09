@@ -229,21 +229,21 @@ export default function ClientesPage() {
         </div>
 
         {/* Cards de Resumo */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <h3 className="text-lg font-semibold text-gray-700 mb-2">Total de Clientes</h3>
-            <p className="text-3xl font-bold text-primary-600">{clientes.length}</p>
-            <p className="text-sm text-gray-600 mt-2">cadastrados no sistema</p>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-6">
+          <div className="bg-white rounded-lg shadow-md p-4 md:p-6">
+            <h3 className="text-sm md:text-lg font-semibold text-gray-700 mb-1 md:mb-2">Total de Clientes</h3>
+            <p className="text-2xl md:text-3xl font-bold text-primary-600">{clientes.length}</p>
+            <p className="text-xs text-gray-600 mt-1 md:mt-2">cadastrados no sistema</p>
           </div>
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <h3 className="text-lg font-semibold text-gray-700 mb-2">Clientes Ativos</h3>
-            <p className="text-3xl font-bold text-green-600">{clientesAtivos}</p>
-            <p className="text-sm text-gray-600 mt-2">com contrato ativo</p>
+          <div className="bg-white rounded-lg shadow-md p-4 md:p-6">
+            <h3 className="text-sm md:text-lg font-semibold text-gray-700 mb-1 md:mb-2">Clientes Ativos</h3>
+            <p className="text-2xl md:text-3xl font-bold text-green-600">{clientesAtivos}</p>
+            <p className="text-xs text-gray-600 mt-1 md:mt-2">com contrato ativo</p>
           </div>
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <h3 className="text-lg font-semibold text-gray-700 mb-2">Receita Mensal Recorrente</h3>
-            <p className="text-3xl font-bold text-blue-600">{formatCurrency(receitaMensal)}</p>
-            <p className="text-sm text-gray-600 mt-2">de clientes ativos</p>
+          <div className="bg-white rounded-lg shadow-md p-4 md:p-6">
+            <h3 className="text-sm md:text-lg font-semibold text-gray-700 mb-1 md:mb-2">Receita Recorrente</h3>
+            <p className="text-2xl md:text-3xl font-bold text-blue-600">{formatCurrency(receitaMensal)}</p>
+            <p className="text-xs text-gray-600 mt-1 md:mt-2">de clientes ativos</p>
           </div>
         </div>
 
