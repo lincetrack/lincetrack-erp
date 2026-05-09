@@ -44,49 +44,51 @@ export default function DashboardPage() {
     }
   }
 
-  // Calcular métricas baseadas no mês selecionado (dados históricos)
-  // Filtrar faturas do mês selecionado
+  // Clientes ativos = contagem real da tabela de clientes (independe do mês)
+  const clientesAtivos = clientes.filter(c => c.ativo).length
+
+  // Total de veículos = veículos reais dos clientes ativos (independe do mês)
+  const totalVeiculos = clientes
+    .filter(c => c.ativo)
+    .reduce((acc, c) => acc + (c.veiculos?.length || 0), 0)
+
+  // Faturas do mês selecionado
   const faturasDoMes = faturas.filter(f => f.data_vencimento.startsWith(selectedMonth))
 
-  // Clientes ativos no mês = clientes únicos que tiveram faturas naquele mês
-  const clientesAtivosNoMes = new Set(faturasDoMes.map(f => f.cliente_id))
-  const clientesAtivos = clientesAtivosNoMes.size
+  // Receita prevista = todas as faturas do mês (pagas + pendentes)
+  const receitaPrevista = faturasDoMes.reduce((acc, f) => acc + f.valor, 0)
 
-  // Receita mensal = soma de TODAS as faturas do mês (pagas + pendentes)
-  const receitaMensal = faturasDoMes.reduce((acc, f) => acc + f.valor, 0)
+  // Receita realizada = apenas faturas pagas
+  const receitaRealizada = faturasDoMes
+    .filter(f => f.status === 'pago')
+    .reduce((acc, f) => acc + f.valor, 0)
 
-  // Faturas pendentes = soma apenas das faturas pendentes do mês
+  // Faturas pendentes = valor a receber
   const faturasPendentes = faturasDoMes
     .filter(f => f.status === 'pendente')
     .reduce((acc, f) => acc + f.valor, 0)
 
-  // Despesas do mês
-  const despesasMes = despesas
-    .filter(d => d.data_vencimento.startsWith(selectedMonth))
+  // Despesas do mês (todas: pagas + pendentes)
+  const despesasDoMes = despesas.filter(d => d.data_vencimento.startsWith(selectedMonth))
+  const despesasMes = despesasDoMes.reduce((acc, d) => acc + d.valor, 0)
+
+  // Despesas pagas do mês
+  const despesasPagas = despesasDoMes
+    .filter(d => d.status === 'pago')
     .reduce((acc, d) => acc + d.valor, 0)
 
-  // Resultado = Receita (faturas pagas) - Despesas (pagas)
-  const receitaPaga = faturasDoMes
-    .filter(f => f.status === 'pago')
-    .reduce((acc, f) => acc + f.valor, 0)
-  const despesasPagas = despesas
-    .filter(d => d.data_vencimento.startsWith(selectedMonth) && d.status === 'pago')
-    .reduce((acc, d) => acc + d.valor, 0)
-  const resultado = receitaPaga - despesasPagas
-
-  // Total de veículos do mês = soma dos veículos registrados nas faturas daquele mês
-  const totalVeiculos = faturasDoMes.reduce((acc, f) => acc + (f.quantidade_veiculos || 0), 0)
+  // Resultado realizado = receita paga - despesas pagas
+  const resultado = receitaRealizada - despesasPagas
 
   // Faturas recentes do mês selecionado
-  const faturasRecentes = faturasDoMes
+  const faturasRecentes = [...faturasDoMes]
     .sort((a, b) => new Date(b.data_vencimento).getTime() - new Date(a.data_vencimento).getTime())
-    .slice(0, 3)
+    .slice(0, 5)
 
   // Despesas recentes do mês selecionado
-  const despesasDoMes = despesas.filter(d => d.data_vencimento.startsWith(selectedMonth))
-  const despesasRecentes = despesasDoMes
+  const despesasRecentes = [...despesasDoMes]
     .sort((a, b) => new Date(b.data_vencimento).getTime() - new Date(a.data_vencimento).getTime())
-    .slice(0, 3)
+    .slice(0, 5)
 
   const formatDate = (dateString: string) => {
     const [year, month, day] = dateString.split('-')
@@ -113,36 +115,36 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3 md:gap-6">
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3 md:gap-4">
           <StatsCard
             title="Clientes Ativos"
             value={clientesAtivos.toString()}
             icon="👥"
-            trend={clientesAtivos > 0 ? { value: 8, isPositive: true } : undefined}
           />
           <StatsCard
             title="Total de Veículos"
             value={totalVeiculos.toString()}
             icon="🚗"
-            trend={totalVeiculos > 0 ? { value: 5, isPositive: true } : undefined}
           />
           <StatsCard
-            title="Receita Mensal"
-            value={formatCurrency(receitaMensal)}
+            title="Receita Prevista"
+            value={formatCurrency(receitaPrevista)}
+            icon="📋"
+          />
+          <StatsCard
+            title="Receita Realizada"
+            value={formatCurrency(receitaRealizada)}
             icon="💵"
-            trend={receitaMensal > 0 ? { value: 12, isPositive: true } : undefined}
           />
           <StatsCard
-            title="Faturas Pendentes"
+            title="A Receber"
             value={formatCurrency(faturasPendentes)}
             icon="⏱"
-            trend={faturasPendentes > 0 ? { value: 5, isPositive: false } : undefined}
           />
           <StatsCard
             title="Despesas do Mês"
             value={formatCurrency(despesasMes)}
             icon="💸"
-            trend={despesasMes > 0 ? { value: 3, isPositive: true } : undefined}
           />
         </div>
 
@@ -206,17 +208,23 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        <div className="bg-gradient-to-r from-primary-600 to-blue-600 rounded-lg shadow-md p-6 text-white">
-          <div className="flex justify-between items-center">
-            <div>
-              <h3 className="text-2xl font-bold mb-2">Resultado do Mês</h3>
-              <p className="text-sm opacity-90">Receitas - Despesas</p>
+        <div className={`rounded-lg shadow-md p-6 text-white ${resultado >= 0 ? 'bg-gradient-to-r from-primary-600 to-blue-600' : 'bg-gradient-to-r from-red-600 to-orange-600'}`}>
+          <h3 className="text-lg font-bold mb-4">Resultado Realizado — {mesNome}</h3>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="bg-white/15 rounded-lg p-4">
+              <p className="text-xs opacity-80 uppercase tracking-wider mb-1">Receita Recebida</p>
+              <p className="text-2xl font-bold">{formatCurrency(receitaRealizada)}</p>
+              <p className="text-xs opacity-75 mt-1">de {formatCurrency(receitaPrevista)} previstos</p>
             </div>
-            <div className="text-right">
-              <p className="text-4xl font-bold">{formatCurrency(resultado)}</p>
-              <p className="text-sm opacity-90 mt-1">
-                {resultado >= 0 ? '↑ Positivo' : '↓ Negativo'}
-              </p>
+            <div className="bg-white/15 rounded-lg p-4">
+              <p className="text-xs opacity-80 uppercase tracking-wider mb-1">Despesas Pagas</p>
+              <p className="text-2xl font-bold">{formatCurrency(despesasPagas)}</p>
+              <p className="text-xs opacity-75 mt-1">de {formatCurrency(despesasMes)} previstos</p>
+            </div>
+            <div className="bg-white/25 rounded-lg p-4 border border-white/30">
+              <p className="text-xs opacity-80 uppercase tracking-wider mb-1">Resultado Líquido</p>
+              <p className="text-3xl font-bold">{formatCurrency(resultado)}</p>
+              <p className="text-xs opacity-75 mt-1">{resultado >= 0 ? '↑ Positivo' : '↓ Negativo'}</p>
             </div>
           </div>
         </div>

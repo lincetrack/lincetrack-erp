@@ -53,13 +53,11 @@ export default function RelatoriosPage() {
     window.print()
   }
 
+  // Comparação de strings YYYY-MM-DD evita bugs de timezone do Date()
   const filterByDate = <T extends { data_vencimento: string }>(items: T[]) => {
-    return items.filter(item => {
-      const date = new Date(item.data_vencimento)
-      const start = new Date(startDate)
-      const end = new Date(endDate)
-      return date >= start && date <= end
-    })
+    return items.filter(item =>
+      item.data_vencimento >= startDate && item.data_vencimento <= endDate
+    )
   }
 
   const renderFaturasReport = () => {
@@ -379,9 +377,19 @@ export default function RelatoriosPage() {
     const filteredFaturas = filterByDate(faturas)
     const filteredDespesas = filterByDate(despesas)
 
-    const totalReceitas = filteredFaturas.filter(f => f.status === 'pago').reduce((acc, f) => acc + f.valor, 0)
-    const totalDespesas = filteredDespesas.filter(d => d.status === 'pago').reduce((acc, d) => acc + d.valor, 0)
-    const resultado = totalReceitas - totalDespesas
+    const receitaRealizada = filteredFaturas.filter(f => f.status === 'pago').reduce((acc, f) => acc + f.valor, 0)
+    const receitaPrevista = filteredFaturas.reduce((acc, f) => acc + f.valor, 0)
+    const receitaPendente = filteredFaturas.filter(f => f.status === 'pendente').reduce((acc, f) => acc + f.valor, 0)
+
+    const despesasPagas = filteredDespesas.filter(d => d.status === 'pago').reduce((acc, d) => acc + d.valor, 0)
+    const despesasPrevistas = filteredDespesas.reduce((acc, d) => acc + d.valor, 0)
+    const despesasPendentes = filteredDespesas.filter(d => d.status === 'pendente').reduce((acc, d) => acc + d.valor, 0)
+
+    const resultadoRealizado = receitaRealizada - despesasPagas
+    const resultadoPrevisto = receitaPrevista - despesasPrevistas
+
+    const formatPct = (value: number, total: number) =>
+      total > 0 ? `${((value / total) * 100).toFixed(1)}%` : '—'
 
     return (
       <div className="space-y-6">
@@ -389,56 +397,124 @@ export default function RelatoriosPage() {
         <div className="hidden print:block mb-4">
           <h1 className="text-2xl font-bold text-gray-800 mb-2">Relatório Financeiro Consolidado</h1>
           <p className="text-sm text-gray-600">
-            Período: {new Date(startDate).toLocaleDateString('pt-BR')} a {new Date(endDate).toLocaleDateString('pt-BR')}
+            Período: {startDate.split('-').reverse().join('/')} a {endDate.split('-').reverse().join('/')}
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 print-summary-card">
-          <div className="bg-green-50 p-4 rounded-lg print-no-break">
-            <p className="text-sm text-gray-600">Total Receitas</p>
-            <p className="text-2xl font-bold text-green-600">{formatCurrency(totalReceitas)}</p>
-          </div>
-          <div className="bg-red-50 p-4 rounded-lg print-no-break">
-            <p className="text-sm text-gray-600">Total Despesas</p>
-            <p className="text-2xl font-bold text-red-600">{formatCurrency(totalDespesas)}</p>
-          </div>
-          <div className={`p-4 rounded-lg print-no-break ${resultado >= 0 ? 'bg-blue-50' : 'bg-orange-50'}`}>
-            <p className="text-sm text-gray-600">Resultado</p>
-            <p className={`text-2xl font-bold ${resultado >= 0 ? 'text-blue-600' : 'text-orange-600'}`}>
-              {formatCurrency(resultado)}
-            </p>
-          </div>
-          <div className="bg-purple-50 p-4 rounded-lg print-no-break">
-            <p className="text-sm text-gray-600">Margem</p>
-            <p className="text-2xl font-bold text-purple-600">
-              {totalReceitas > 0 ? ((resultado / totalReceitas) * 100).toFixed(1) : 0}%
-            </p>
+        {/* Receitas */}
+        <div>
+          <h3 className="text-base font-semibold text-gray-700 mb-2 uppercase tracking-wider">Receitas</h3>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 print-summary-card">
+            <div className="bg-green-50 border border-green-200 p-4 rounded-lg print-no-break">
+              <p className="text-xs text-gray-500 uppercase tracking-wider">Prevista (Total Faturas)</p>
+              <p className="text-2xl font-bold text-green-700">{formatCurrency(receitaPrevista)}</p>
+              <p className="text-xs text-gray-500 mt-1">{filteredFaturas.length} fatura(s)</p>
+            </div>
+            <div className="bg-green-100 border border-green-300 p-4 rounded-lg print-no-break">
+              <p className="text-xs text-gray-500 uppercase tracking-wider">Realizada (Pagas)</p>
+              <p className="text-2xl font-bold text-green-800">{formatCurrency(receitaRealizada)}</p>
+              <p className="text-xs text-gray-500 mt-1">{formatPct(receitaRealizada, receitaPrevista)} do previsto</p>
+            </div>
+            <div className="bg-yellow-50 border border-yellow-200 p-4 rounded-lg print-no-break">
+              <p className="text-xs text-gray-500 uppercase tracking-wider">Pendente (A Receber)</p>
+              <p className="text-2xl font-bold text-yellow-700">{formatCurrency(receitaPendente)}</p>
+              <p className="text-xs text-gray-500 mt-1">{filteredFaturas.filter(f => f.status === 'pendente').length} fatura(s) em aberto</p>
+            </div>
           </div>
         </div>
 
+        {/* Despesas */}
+        <div>
+          <h3 className="text-base font-semibold text-gray-700 mb-2 uppercase tracking-wider">Despesas</h3>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 print-summary-card">
+            <div className="bg-red-50 border border-red-200 p-4 rounded-lg print-no-break">
+              <p className="text-xs text-gray-500 uppercase tracking-wider">Prevista (Total)</p>
+              <p className="text-2xl font-bold text-red-700">{formatCurrency(despesasPrevistas)}</p>
+              <p className="text-xs text-gray-500 mt-1">{filteredDespesas.length} despesa(s)</p>
+            </div>
+            <div className="bg-red-100 border border-red-300 p-4 rounded-lg print-no-break">
+              <p className="text-xs text-gray-500 uppercase tracking-wider">Pagas</p>
+              <p className="text-2xl font-bold text-red-800">{formatCurrency(despesasPagas)}</p>
+              <p className="text-xs text-gray-500 mt-1">{formatPct(despesasPagas, despesasPrevistas)} do previsto</p>
+            </div>
+            <div className="bg-orange-50 border border-orange-200 p-4 rounded-lg print-no-break">
+              <p className="text-xs text-gray-500 uppercase tracking-wider">Pendente (A Pagar)</p>
+              <p className="text-2xl font-bold text-orange-700">{formatCurrency(despesasPendentes)}</p>
+              <p className="text-xs text-gray-500 mt-1">{filteredDespesas.filter(d => d.status === 'pendente').length} despesa(s) em aberto</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Resultado */}
+        <div>
+          <h3 className="text-base font-semibold text-gray-700 mb-2 uppercase tracking-wider">Resultado</h3>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 print-summary-card">
+            <div className={`p-4 rounded-lg border print-no-break ${resultadoRealizado >= 0 ? 'bg-blue-50 border-blue-200' : 'bg-orange-50 border-orange-200'}`}>
+              <p className="text-xs text-gray-500 uppercase tracking-wider">Resultado Realizado</p>
+              <p className={`text-2xl font-bold ${resultadoRealizado >= 0 ? 'text-blue-700' : 'text-orange-700'}`}>
+                {formatCurrency(resultadoRealizado)}
+              </p>
+              <p className="text-xs text-gray-500 mt-1">Receita recebida − Despesas pagas</p>
+            </div>
+            <div className={`p-4 rounded-lg border print-no-break ${resultadoPrevisto >= 0 ? 'bg-indigo-50 border-indigo-200' : 'bg-red-50 border-red-200'}`}>
+              <p className="text-xs text-gray-500 uppercase tracking-wider">Resultado Previsto</p>
+              <p className={`text-2xl font-bold ${resultadoPrevisto >= 0 ? 'text-indigo-700' : 'text-red-700'}`}>
+                {formatCurrency(resultadoPrevisto)}
+              </p>
+              <p className="text-xs text-gray-500 mt-1">Receita total − Despesas totais</p>
+            </div>
+            <div className="bg-purple-50 border border-purple-200 p-4 rounded-lg print-no-break">
+              <p className="text-xs text-gray-500 uppercase tracking-wider">Margem Realizada</p>
+              <p className="text-2xl font-bold text-purple-700">
+                {receitaRealizada > 0 ? `${((resultadoRealizado / receitaRealizada) * 100).toFixed(1)}%` : '—'}
+              </p>
+              <p className="text-xs text-gray-500 mt-1">sobre a receita recebida</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Listas detalhadas */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 print:grid-cols-2">
           <div className="bg-white p-4 rounded-lg border border-gray-300 print-no-break">
-            <h3 className="font-bold text-lg mb-4 text-green-700">Receitas Recebidas</h3>
-            <div className="space-y-2 max-h-96 overflow-y-auto print:max-h-none print:overflow-visible">
-              {filteredFaturas.filter(f => f.status === 'pago').map(fatura => (
-                <div key={fatura.id} className="flex justify-between border-b pb-2">
-                  <span className="text-sm">{fatura.cliente_nome}</span>
-                  <span className="text-sm font-bold text-green-600">{formatCurrency(fatura.valor)}</span>
-                </div>
-              ))}
+            <h3 className="font-bold text-base mb-3 text-green-700">Faturas Recebidas</h3>
+            <div className="space-y-2 max-h-72 overflow-y-auto print:max-h-none print:overflow-visible">
+              {filteredFaturas.filter(f => f.status === 'pago').length === 0 ? (
+                <p className="text-sm text-gray-400 italic">Nenhuma fatura paga no período</p>
+              ) : (
+                filteredFaturas.filter(f => f.status === 'pago').map(fatura => (
+                  <div key={fatura.id} className="flex justify-between border-b pb-1">
+                    <span className="text-sm text-gray-700">{fatura.cliente_nome}</span>
+                    <span className="text-sm font-bold text-green-600">{formatCurrency(fatura.valor)}</span>
+                  </div>
+                ))
+              )}
             </div>
+            {receitaPendente > 0 && (
+              <div className="mt-3 pt-2 border-t border-dashed border-yellow-300">
+                <p className="text-xs text-yellow-700 font-medium">+ {formatCurrency(receitaPendente)} pendente(s) a receber</p>
+              </div>
+            )}
           </div>
 
           <div className="bg-white p-4 rounded-lg border border-gray-300 print-no-break">
-            <h3 className="font-bold text-lg mb-4 text-red-700">Despesas Pagas</h3>
-            <div className="space-y-2 max-h-96 overflow-y-auto print:max-h-none print:overflow-visible">
-              {filteredDespesas.filter(d => d.status === 'pago').map(despesa => (
-                <div key={despesa.id} className="flex justify-between border-b pb-2">
-                  <span className="text-sm">{despesa.descricao}</span>
-                  <span className="text-sm font-bold text-red-600">{formatCurrency(despesa.valor)}</span>
-                </div>
-              ))}
+            <h3 className="font-bold text-base mb-3 text-red-700">Despesas Pagas</h3>
+            <div className="space-y-2 max-h-72 overflow-y-auto print:max-h-none print:overflow-visible">
+              {filteredDespesas.filter(d => d.status === 'pago').length === 0 ? (
+                <p className="text-sm text-gray-400 italic">Nenhuma despesa paga no período</p>
+              ) : (
+                filteredDespesas.filter(d => d.status === 'pago').map(despesa => (
+                  <div key={despesa.id} className="flex justify-between border-b pb-1">
+                    <span className="text-sm text-gray-700">{despesa.descricao}</span>
+                    <span className="text-sm font-bold text-red-600">{formatCurrency(despesa.valor)}</span>
+                  </div>
+                ))
+              )}
             </div>
+            {despesasPendentes > 0 && (
+              <div className="mt-3 pt-2 border-t border-dashed border-orange-300">
+                <p className="text-xs text-orange-700 font-medium">+ {formatCurrency(despesasPendentes)} pendente(s) a pagar</p>
+              </div>
+            )}
           </div>
         </div>
       </div>

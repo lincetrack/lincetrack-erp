@@ -204,21 +204,30 @@ export default function DespesasPage() {
         </div>
 
         {/* Cards de Resumo */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           <div className="bg-white rounded-lg shadow-md p-6">
-            <h3 className="text-lg font-semibold text-gray-700 mb-2">Total de Despesas</h3>
-            <p className="text-3xl font-bold text-primary-600">{filteredDespesas.length}</p>
-            <p className="text-sm text-gray-600 mt-2">no período selecionado</p>
+            <h3 className="text-lg font-semibold text-gray-700 mb-2">Total do Mês</h3>
+            <p className="text-3xl font-bold text-primary-600">{formatCurrency(totalPendente + totalPago)}</p>
+            <p className="text-sm text-gray-600 mt-2">{filteredDespesas.length} despesa{filteredDespesas.length !== 1 ? 's' : ''} no período</p>
           </div>
           <div className="bg-white rounded-lg shadow-md p-6">
-            <h3 className="text-lg font-semibold text-gray-700 mb-2">Despesas Pendentes</h3>
+            <h3 className="text-lg font-semibold text-gray-700 mb-2">Pendente</h3>
             <p className="text-3xl font-bold text-red-600">{formatCurrency(totalPendente)}</p>
-            <p className="text-sm text-gray-600 mt-2">aguardando pagamento</p>
+            <p className="text-sm text-gray-600 mt-2">{filteredDespesas.filter(d => d.status === 'pendente').length} a pagar</p>
           </div>
           <div className="bg-white rounded-lg shadow-md p-6">
-            <h3 className="text-lg font-semibold text-gray-700 mb-2">Despesas Pagas</h3>
+            <h3 className="text-lg font-semibold text-gray-700 mb-2">Pagas</h3>
             <p className="text-3xl font-bold text-green-600">{formatCurrency(totalPago)}</p>
-            <p className="text-sm text-gray-600 mt-2">já pagas</p>
+            <p className="text-sm text-gray-600 mt-2">{filteredDespesas.filter(d => d.status === 'pago').length} quitadas</p>
+          </div>
+          <div className="bg-white rounded-lg shadow-md p-6">
+            <h3 className="text-lg font-semibold text-gray-700 mb-2">Saldo Pendente</h3>
+            <p className="text-3xl font-bold text-orange-600">
+              {totalPendente + totalPago > 0
+                ? `${Math.round((totalPago / (totalPendente + totalPago)) * 100)}%`
+                : '0%'}
+            </p>
+            <p className="text-sm text-gray-600 mt-2">do total já quitado</p>
           </div>
         </div>
 
