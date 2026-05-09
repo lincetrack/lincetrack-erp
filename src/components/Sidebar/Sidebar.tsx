@@ -57,7 +57,7 @@ export default function Sidebar() {
             <img
               src="/logo-lince-track-new.png"
               alt="Lince Track Logo"
-              className="w-10 h-10 object-contain cursor-pointer hover:opacity-80 transition-opacity"
+              className="w-40 h-40 object-contain cursor-pointer hover:opacity-80 transition-opacity"
             />
           </Link>
         </div>
