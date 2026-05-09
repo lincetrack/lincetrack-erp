@@ -20,6 +20,19 @@ export default function FaturasPage() {
   const [selectedCustomer, setSelectedCustomer] = useState<Cliente | null>(null)
   const [showEditModal, setShowEditModal] = useState(false)
   const [editingFatura, setEditingFatura] = useState<Fatura | null>(null)
+  const [showNewModal, setShowNewModal] = useState(false)
+  const [newFatura, setNewFatura] = useState<Omit<Fatura, 'id' | 'numero_fatura' | 'created_at' | 'updated_at'>>({
+    cliente_id: '',
+    cliente_nome: '',
+    descricao: 'Loc. Equipamento e Software para Rastreamento Veicular',
+    valor: 0,
+    quantidade_veiculos: 1,
+    data_vencimento: '',
+    data_emissao: new Date().toISOString().split('T')[0],
+    status: 'pendente',
+    enviado_whatsapp: false,
+    observacoes: ''
+  })
   const [notification, setNotification] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
 
@@ -154,6 +167,57 @@ export default function FaturasPage() {
     }
   }
 
+  const handleNewFaturaClienteChange = (clienteId: string) => {
+    const cliente = clientes.find(c => c.id === clienteId)
+    if (!cliente) return
+    const [year, month] = selectedMonth.split('-')
+    const dueDate = `${year}-${month}-${cliente.dia_vencimento.padStart(2, '0')}`
+    setNewFatura(prev => ({
+      ...prev,
+      cliente_id: clienteId,
+      cliente_nome: cliente.nome,
+      valor: cliente.valor_mensalidade,
+      quantidade_veiculos: cliente.veiculos?.length || 1,
+      data_vencimento: dueDate
+    }))
+  }
+
+  const handleCreateFatura = async () => {
+    if (!newFatura.cliente_id) {
+      showNotification('Selecione um cliente')
+      return
+    }
+    if (!newFatura.data_vencimento) {
+      showNotification('Informe a data de vencimento')
+      return
+    }
+    if (!newFatura.valor || newFatura.valor <= 0) {
+      showNotification('Informe um valor válido')
+      return
+    }
+    try {
+      await faturaService.create(newFatura)
+      await loadData()
+      setShowNewModal(false)
+      setNewFatura({
+        cliente_id: '',
+        cliente_nome: '',
+        descricao: 'Loc. Equipamento e Software para Rastreamento Veicular',
+        valor: 0,
+        quantidade_veiculos: 1,
+        data_vencimento: '',
+        data_emissao: new Date().toISOString().split('T')[0],
+        status: 'pendente',
+        enviado_whatsapp: false,
+        observacoes: ''
+      })
+      showNotification('Fatura criada com sucesso!')
+    } catch (error) {
+      console.error('Erro ao criar fatura:', error)
+      showNotification('Erro ao criar fatura')
+    }
+  }
+
   const handleDeleteFatura = async (id: string) => {
     if (confirm('Tem certeza que deseja excluir esta fatura? Esta ação não pode ser desfeita.')) {
       try {
@@ -254,6 +318,12 @@ export default function FaturasPage() {
               className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center justify-center gap-2 transition-colors"
             >
               🖨️ Imprimir Lista
+            </button>
+            <button
+              onClick={() => setShowNewModal(true)}
+              className="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg flex items-center justify-center gap-2 transition-colors"
+            >
+              ➕ Nova Fatura
             </button>
             <button
               onClick={generateInvoices}
@@ -475,6 +545,159 @@ export default function FaturasPage() {
             setSelectedCustomer(null)
           }}
         />
+      )}
+
+      {/* Modal de Nova Fatura (inserção manual) */}
+      {showNewModal && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-lg shadow-xl w-full max-w-md p-6 max-h-[90vh] overflow-y-auto">
+            <h2 className="text-2xl font-bold text-gray-800 mb-4">Nova Fatura Manual</h2>
+
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Cliente *
+                </label>
+                <select
+                  value={newFatura.cliente_id}
+                  onChange={(e) => handleNewFaturaClienteChange(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white"
+                >
+                  <option value="">Selecione um cliente...</option>
+                  {clientes
+                    .filter(c => c.ativo)
+                    .sort((a, b) => a.nome.localeCompare(b.nome))
+                    .map(c => (
+                      <option key={c.id} value={c.id}>{c.nome}</option>
+                    ))
+                  }
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Descrição *
+                </label>
+                <input
+                  type="text"
+                  value={newFatura.descricao}
+                  onChange={(e) => setNewFatura({ ...newFatura, descricao: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Valor (R$) *
+                  </label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    value={newFatura.valor || ''}
+                    onChange={(e) => setNewFatura({ ...newFatura, valor: parseFloat(e.target.value) || 0 })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                    placeholder="0,00"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Qtd. Veículos
+                  </label>
+                  <input
+                    type="number"
+                    min="1"
+                    value={newFatura.quantidade_veiculos}
+                    onChange={(e) => setNewFatura({ ...newFatura, quantidade_veiculos: parseInt(e.target.value) || 1 })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Data de Vencimento *
+                  </label>
+                  <input
+                    type="date"
+                    value={newFatura.data_vencimento}
+                    onChange={(e) => setNewFatura({ ...newFatura, data_vencimento: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Data de Emissão *
+                  </label>
+                  <input
+                    type="date"
+                    value={newFatura.data_emissao}
+                    onChange={(e) => setNewFatura({ ...newFatura, data_emissao: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Status
+                </label>
+                <select
+                  value={newFatura.status}
+                  onChange={(e) => setNewFatura({ ...newFatura, status: e.target.value as 'pendente' | 'pago' })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white"
+                >
+                  <option value="pendente">Pendente</option>
+                  <option value="pago">Pago</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Observações
+                </label>
+                <textarea
+                  value={newFatura.observacoes || ''}
+                  onChange={(e) => setNewFatura({ ...newFatura, observacoes: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  rows={3}
+                  placeholder="Observações adicionais..."
+                />
+              </div>
+            </div>
+
+            <div className="flex gap-3 mt-6">
+              <button
+                onClick={() => {
+                  setShowNewModal(false)
+                  setNewFatura({
+                    cliente_id: '',
+                    cliente_nome: '',
+                    descricao: 'Loc. Equipamento e Software para Rastreamento Veicular',
+                    valor: 0,
+                    quantidade_veiculos: 1,
+                    data_vencimento: '',
+                    data_emissao: new Date().toISOString().split('T')[0],
+                    status: 'pendente',
+                    enviado_whatsapp: false,
+                    observacoes: ''
+                  })
+                }}
+                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={handleCreateFatura}
+                className="flex-1 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
+              >
+                Criar Fatura
+              </button>
+            </div>
+          </div>
+        </div>
       )}
 
       {/* Modal de Editar Fatura */}
