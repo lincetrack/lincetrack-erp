@@ -186,28 +186,28 @@ export default function RelatoriosPage() {
         </div>
 
         <div className="overflow-x-auto print:overflow-visible">
-          <table className="w-full border-collapse border border-gray-300 print:text-sm">
+          <table className="w-full border-collapse border border-gray-300 text-sm print:text-sm">
             <thead className="bg-gray-100">
               <tr>
-                <th className="border border-gray-300 px-4 py-2 text-left">Data</th>
-                <th className="border border-gray-300 px-4 py-2 text-left">Cliente</th>
-                <th className="border border-gray-300 px-4 py-2 text-left">Descrição</th>
-                <th className="border border-gray-300 px-4 py-2 text-right">Valor</th>
-                <th className="border border-gray-300 px-4 py-2 text-center">Status</th>
+                <th className="border border-gray-300 px-3 py-2 text-left">Data</th>
+                <th className="border border-gray-300 px-3 py-2 text-left">Cliente</th>
+                <th className="hidden sm:table-cell border border-gray-300 px-3 py-2 text-left">Descrição</th>
+                <th className="border border-gray-300 px-3 py-2 text-right">Valor</th>
+                <th className="border border-gray-300 px-3 py-2 text-center">Status</th>
               </tr>
             </thead>
             <tbody>
               {filteredFaturas.map(fatura => (
                 <tr key={fatura.id}>
-                  <td className="border border-gray-300 px-4 py-2">{formatDate(fatura.data_vencimento)}</td>
-                  <td className="border border-gray-300 px-4 py-2">{fatura.cliente_nome}</td>
-                  <td className="border border-gray-300 px-4 py-2">{fatura.descricao}</td>
-                  <td className="border border-gray-300 px-4 py-2 text-right">{formatCurrency(fatura.valor)}</td>
-                  <td className="border border-gray-300 px-4 py-2 text-center">
-                    <span className={`px-2 py-1 rounded text-xs ${
+                  <td className="border border-gray-300 px-3 py-2 whitespace-nowrap">{formatDate(fatura.data_vencimento)}</td>
+                  <td className="border border-gray-300 px-3 py-2 font-medium">{fatura.cliente_nome}</td>
+                  <td className="hidden sm:table-cell border border-gray-300 px-3 py-2 text-gray-600">{fatura.descricao}</td>
+                  <td className="border border-gray-300 px-3 py-2 text-right font-bold whitespace-nowrap">{formatCurrency(fatura.valor)}</td>
+                  <td className="border border-gray-300 px-3 py-2 text-center">
+                    <span className={`px-2 py-1 rounded text-xs font-medium ${
                       fatura.status === 'pago' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
                     }`}>
-                      {fatura.status.toUpperCase()}
+                      {fatura.status === 'pago' ? 'PAGO' : 'PENDENTE'}
                     </span>
                   </td>
                 </tr>
@@ -269,30 +269,32 @@ export default function RelatoriosPage() {
         </div>
 
         <div className="overflow-x-auto print:overflow-visible">
-          <table className="w-full border-collapse border border-gray-300 print:text-sm">
+          <table className="w-full border-collapse border border-gray-300 text-sm print:text-sm">
             <thead className="bg-gray-100">
               <tr>
-                <th className="border border-gray-300 px-4 py-2 text-left">Data</th>
-                <th className="border border-gray-300 px-4 py-2 text-left">Descrição</th>
-                <th className="border border-gray-300 px-4 py-2 text-left">Categoria</th>
-                <th className="border border-gray-300 px-4 py-2 text-left">Fornecedor</th>
-                <th className="border border-gray-300 px-4 py-2 text-right">Valor</th>
-                <th className="border border-gray-300 px-4 py-2 text-center">Status</th>
+                <th className="border border-gray-300 px-3 py-2 text-left">Data</th>
+                <th className="border border-gray-300 px-3 py-2 text-left">Descrição</th>
+                <th className="hidden sm:table-cell border border-gray-300 px-3 py-2 text-left">Categoria</th>
+                <th className="hidden md:table-cell border border-gray-300 px-3 py-2 text-left">Fornecedor</th>
+                <th className="border border-gray-300 px-3 py-2 text-right">Valor</th>
+                <th className="border border-gray-300 px-3 py-2 text-center">Status</th>
               </tr>
             </thead>
             <tbody>
               {filteredDespesas.map(despesa => (
                 <tr key={despesa.id}>
-                  <td className="border border-gray-300 px-4 py-2">{formatDate(despesa.data_vencimento)}</td>
-                  <td className="border border-gray-300 px-4 py-2">{despesa.descricao}</td>
-                  <td className="border border-gray-300 px-4 py-2">{despesa.categoria}</td>
-                  <td className="border border-gray-300 px-4 py-2">{despesa.fornecedor || '-'}</td>
-                  <td className="border border-gray-300 px-4 py-2 text-right">{formatCurrency(despesa.valor)}</td>
-                  <td className="border border-gray-300 px-4 py-2 text-center">
-                    <span className={`px-2 py-1 rounded text-xs ${
+                  <td className="border border-gray-300 px-3 py-2 whitespace-nowrap">{formatDate(despesa.data_vencimento)}</td>
+                  <td className="border border-gray-300 px-3 py-2 font-medium">{despesa.descricao}</td>
+                  <td className="hidden sm:table-cell border border-gray-300 px-3 py-2">
+                    <span className="px-2 py-0.5 bg-gray-100 rounded text-xs">{despesa.categoria}</span>
+                  </td>
+                  <td className="hidden md:table-cell border border-gray-300 px-3 py-2 text-gray-600">{despesa.fornecedor || '-'}</td>
+                  <td className="border border-gray-300 px-3 py-2 text-right font-bold whitespace-nowrap">{formatCurrency(despesa.valor)}</td>
+                  <td className="border border-gray-300 px-3 py-2 text-center">
+                    <span className={`px-2 py-1 rounded text-xs font-medium ${
                       despesa.status === 'pago' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
                     }`}>
-                      {despesa.status.toUpperCase()}
+                      {despesa.status === 'pago' ? 'PAGO' : 'PENDENTE'}
                     </span>
                   </td>
                 </tr>
@@ -339,27 +341,27 @@ export default function RelatoriosPage() {
         </div>
 
         <div className="overflow-x-auto print:overflow-visible">
-          <table className="w-full border-collapse border border-gray-300 print:text-sm">
+          <table className="w-full border-collapse border border-gray-300 text-sm print:text-sm">
             <thead className="bg-gray-100">
               <tr>
-                <th className="border border-gray-300 px-4 py-2 text-left">Cliente</th>
-                <th className="border border-gray-300 px-4 py-2 text-left">CNPJ</th>
-                <th className="border border-gray-300 px-4 py-2 text-left">Cidade</th>
-                <th className="border border-gray-300 px-4 py-2 text-center">Veículos</th>
-                <th className="border border-gray-300 px-4 py-2 text-right">Mensalidade</th>
-                <th className="border border-gray-300 px-4 py-2 text-center">Status</th>
+                <th className="border border-gray-300 px-3 py-2 text-left">Cliente</th>
+                <th className="hidden sm:table-cell border border-gray-300 px-3 py-2 text-left">CNPJ</th>
+                <th className="hidden sm:table-cell border border-gray-300 px-3 py-2 text-left">Cidade</th>
+                <th className="border border-gray-300 px-3 py-2 text-center">Veíc.</th>
+                <th className="border border-gray-300 px-3 py-2 text-right">Mensalidade</th>
+                <th className="border border-gray-300 px-3 py-2 text-center">Status</th>
               </tr>
             </thead>
             <tbody>
               {clientes.map(cliente => (
                 <tr key={cliente.id}>
-                  <td className="border border-gray-300 px-4 py-2">{cliente.nome}</td>
-                  <td className="border border-gray-300 px-4 py-2">{cliente.cnpj}</td>
-                  <td className="border border-gray-300 px-4 py-2">{cliente.cidade} - {cliente.estado}</td>
-                  <td className="border border-gray-300 px-4 py-2 text-center">{cliente.veiculos?.length || 0}</td>
-                  <td className="border border-gray-300 px-4 py-2 text-right">{formatCurrency(cliente.valor_mensalidade)}</td>
-                  <td className="border border-gray-300 px-4 py-2 text-center">
-                    <span className={`px-2 py-1 rounded text-xs ${
+                  <td className="border border-gray-300 px-3 py-2 font-medium">{cliente.nome}</td>
+                  <td className="hidden sm:table-cell border border-gray-300 px-3 py-2 text-gray-600">{cliente.cnpj}</td>
+                  <td className="hidden sm:table-cell border border-gray-300 px-3 py-2">{cliente.cidade} - {cliente.estado}</td>
+                  <td className="border border-gray-300 px-3 py-2 text-center">{cliente.veiculos?.length || 0}</td>
+                  <td className="border border-gray-300 px-3 py-2 text-right font-bold whitespace-nowrap">{formatCurrency(cliente.valor_mensalidade)}</td>
+                  <td className="border border-gray-300 px-3 py-2 text-center">
+                    <span className={`px-2 py-1 rounded text-xs font-medium ${
                       cliente.ativo ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
                     }`}>
                       {cliente.ativo ? 'ATIVO' : 'INATIVO'}
@@ -550,15 +552,15 @@ export default function RelatoriosPage() {
           </div>
         ) : (
           <div className="overflow-x-auto print:overflow-visible">
-            <table className="w-full border-collapse border border-gray-300 print:text-sm">
+            <table className="w-full border-collapse border border-gray-300 text-sm print:text-sm">
               <thead className="bg-gray-100">
                 <tr>
-                  <th className="border border-gray-300 px-4 py-2 text-left">Cliente</th>
-                  <th className="border border-gray-300 px-4 py-2 text-left">Telefone</th>
-                  <th className="border border-gray-300 px-4 py-2 text-left">Cidade / UF</th>
-                  <th className="border border-gray-300 px-4 py-2 text-left">Placa</th>
-                  <th className="border border-gray-300 px-4 py-2 text-left">Veículo</th>
-                  <th className="border border-gray-300 px-4 py-2 text-center">Bloqueio</th>
+                  <th className="border border-gray-300 px-3 py-2 text-left">Cliente</th>
+                  <th className="hidden md:table-cell border border-gray-300 px-3 py-2 text-left">Telefone</th>
+                  <th className="hidden sm:table-cell border border-gray-300 px-3 py-2 text-left">Cidade / UF</th>
+                  <th className="border border-gray-300 px-3 py-2 text-left">Placa</th>
+                  <th className="border border-gray-300 px-3 py-2 text-left">Veículo</th>
+                  <th className="border border-gray-300 px-3 py-2 text-center">Bloqueio</th>
                 </tr>
               </thead>
               <tbody>
@@ -569,28 +571,28 @@ export default function RelatoriosPage() {
                         {index === 0 && (
                           <>
                             <td
-                              className="border border-gray-300 px-4 py-2 font-medium"
+                              className="border border-gray-300 px-3 py-2 font-medium"
                               rowSpan={cliente.veiculos.length}
                             >
                               {cliente.nome}
                             </td>
                             <td
-                              className="border border-gray-300 px-4 py-2"
+                              className="hidden md:table-cell border border-gray-300 px-3 py-2"
                               rowSpan={cliente.veiculos.length}
                             >
                               {cliente.telefone}
                             </td>
                             <td
-                              className="border border-gray-300 px-4 py-2"
+                              className="hidden sm:table-cell border border-gray-300 px-3 py-2"
                               rowSpan={cliente.veiculos.length}
                             >
                               {cliente.cidade} - {cliente.estado}
                             </td>
                           </>
                         )}
-                        <td className="border border-gray-300 px-4 py-2 font-mono font-bold">{veiculo.placa}</td>
-                        <td className="border border-gray-300 px-4 py-2">{veiculo.veiculo}</td>
-                        <td className="border border-gray-300 px-4 py-2 text-center">
+                        <td className="border border-gray-300 px-3 py-2 font-mono font-bold">{veiculo.placa}</td>
+                        <td className="border border-gray-300 px-3 py-2">{veiculo.veiculo}</td>
+                        <td className="border border-gray-300 px-3 py-2 text-center">
                           {veiculo.com_bloqueio ? (
                             <span className="px-2 py-1 rounded text-xs bg-orange-100 text-orange-800">SIM</span>
                           ) : (
@@ -601,10 +603,10 @@ export default function RelatoriosPage() {
                     ))
                   ) : (
                     <tr key={cliente.id}>
-                      <td className="border border-gray-300 px-4 py-2 font-medium">{cliente.nome}</td>
-                      <td className="border border-gray-300 px-4 py-2">{cliente.telefone}</td>
-                      <td className="border border-gray-300 px-4 py-2">{cliente.cidade} - {cliente.estado}</td>
-                      <td className="border border-gray-300 px-4 py-2 text-gray-400 italic" colSpan={3}>Sem veículos cadastrados</td>
+                      <td className="border border-gray-300 px-3 py-2 font-medium">{cliente.nome}</td>
+                      <td className="hidden md:table-cell border border-gray-300 px-3 py-2">{cliente.telefone}</td>
+                      <td className="hidden sm:table-cell border border-gray-300 px-3 py-2">{cliente.cidade} - {cliente.estado}</td>
+                      <td className="border border-gray-300 px-3 py-2 text-gray-400 italic" colSpan={3}>Sem veículos cadastrados</td>
                     </tr>
                   )
                 )}
@@ -692,35 +694,35 @@ export default function RelatoriosPage() {
           </div>
         ) : (
           <div className="overflow-x-auto print:overflow-visible">
-            <table className="w-full border-collapse border border-gray-300 print:text-sm">
+            <table className="w-full border-collapse border border-gray-300 text-sm print:text-sm">
               <thead className="bg-gray-100">
                 <tr>
-                  <th className="border border-gray-300 px-4 py-2 text-left">Cliente</th>
-                  <th className="border border-gray-300 px-4 py-2 text-left">Telefone</th>
-                  <th className="border border-gray-300 px-4 py-2 text-center">Faturas</th>
-                  <th className="border border-gray-300 px-4 py-2 text-left">Vencimentos</th>
-                  <th className="border border-gray-300 px-4 py-2 text-center">Dias em Atraso</th>
-                  <th className="border border-gray-300 px-4 py-2 text-right">Total Devido</th>
+                  <th className="border border-gray-300 px-3 py-2 text-left">Cliente</th>
+                  <th className="hidden sm:table-cell border border-gray-300 px-3 py-2 text-left">Telefone</th>
+                  <th className="hidden md:table-cell border border-gray-300 px-3 py-2 text-center">Fat.</th>
+                  <th className="hidden sm:table-cell border border-gray-300 px-3 py-2 text-left">Vencimentos</th>
+                  <th className="border border-gray-300 px-3 py-2 text-center">Atraso</th>
+                  <th className="border border-gray-300 px-3 py-2 text-right">Total Devido</th>
                 </tr>
               </thead>
               <tbody>
                 {listaInadimplentes.map((cliente, idx) => (
                   <tr key={idx} className={idx % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
-                    <td className="border border-gray-300 px-4 py-2 font-medium">{cliente.nome}</td>
-                    <td className="border border-gray-300 px-4 py-2">{cliente.telefone}</td>
-                    <td className="border border-gray-300 px-4 py-2 text-center">{cliente.faturas.length}</td>
-                    <td className="border border-gray-300 px-4 py-2 text-sm">
+                    <td className="border border-gray-300 px-3 py-2 font-medium">{cliente.nome}</td>
+                    <td className="hidden sm:table-cell border border-gray-300 px-3 py-2">{cliente.telefone}</td>
+                    <td className="hidden md:table-cell border border-gray-300 px-3 py-2 text-center">{cliente.faturas.length}</td>
+                    <td className="hidden sm:table-cell border border-gray-300 px-3 py-2">
                       {cliente.faturas
                         .sort((a, b) => a.data_vencimento.localeCompare(b.data_vencimento))
                         .map(f => formatDate(f.data_vencimento))
                         .join(', ')}
                     </td>
-                    <td className="border border-gray-300 px-4 py-2 text-center">
+                    <td className="border border-gray-300 px-3 py-2 text-center">
                       <span className={`px-2 py-1 rounded text-xs font-bold ${faixaCor(cliente.diasMaxAtraso)}`}>
-                        {cliente.diasMaxAtraso} dias
+                        {cliente.diasMaxAtraso}d
                       </span>
                     </td>
-                    <td className="border border-gray-300 px-4 py-2 text-right font-bold text-red-700">
+                    <td className="border border-gray-300 px-3 py-2 text-right font-bold text-red-700 whitespace-nowrap">
                       {formatCurrency(cliente.totalValor)}
                     </td>
                   </tr>
@@ -728,8 +730,9 @@ export default function RelatoriosPage() {
               </tbody>
               <tfoot className="bg-gray-100 font-bold">
                 <tr>
-                  <td colSpan={5} className="border border-gray-300 px-4 py-2 text-right">Total Geral</td>
-                  <td className="border border-gray-300 px-4 py-2 text-right text-red-700">{formatCurrency(totalGeral)}</td>
+                  <td colSpan={2} className="border border-gray-300 px-3 py-2 text-right sm:hidden">Total Geral</td>
+                  <td colSpan={5} className="hidden sm:table-cell border border-gray-300 px-3 py-2 text-right">Total Geral</td>
+                  <td className="border border-gray-300 px-3 py-2 text-right text-red-700 whitespace-nowrap">{formatCurrency(totalGeral)}</td>
                 </tr>
               </tfoot>
             </table>
@@ -755,7 +758,7 @@ export default function RelatoriosPage() {
   return (
     <MainLayout>
       <div className="space-y-6">
-        <h1 className="text-3xl font-bold text-gray-800 print:hidden">Relatórios Gerenciais</h1>
+        <h1 className="text-xl md:text-3xl font-bold text-gray-800 print:hidden">Relatórios Gerenciais</h1>
 
         {!reportType ? (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
