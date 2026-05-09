@@ -5,11 +5,13 @@ import { formatCurrency, formatDate } from '@/utils/formatters'
 import { clienteService } from '@/services/clienteService'
 import { faturaService } from '@/services/faturaService'
 import { despesaService } from '@/services/despesaService'
+import BatchExportModal from '@/components/Faturas/BatchExportModal'
 
 type ReportType = 'faturas' | 'despesas' | 'clientes' | 'financeiro' | 'assistencia' | 'inadimplentes'
 
 export default function RelatoriosPage() {
   const [reportType, setReportType] = useState<ReportType | null>(null)
+  const [showBatchExport, setShowBatchExport] = useState(false)
   const [startDate, setStartDate] = useState('')
   const [endDate, setEndDate] = useState('')
   const [clientes, setClientes] = useState<Cliente[]>([])
@@ -860,6 +862,18 @@ export default function RelatoriosPage() {
               </span>
             </a>
 
+            <button
+              onClick={() => setShowBatchExport(true)}
+              className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow text-left border-l-4 border-violet-500"
+            >
+              <div className="text-4xl mb-4">📦</div>
+              <h3 className="text-lg font-semibold text-gray-800 mb-2">Exportar Faturas em Lote</h3>
+              <p className="text-sm text-gray-600">Gera PDFs de todas as faturas de um mês e compacta em ZIP</p>
+              <span className="inline-block mt-3 text-xs font-semibold text-violet-700 bg-violet-50 border border-violet-200 rounded-full px-3 py-1">
+                📥 Download ZIP
+              </span>
+            </button>
+
           </div>
         ) : (
           <div className="space-y-6">
@@ -922,6 +936,11 @@ export default function RelatoriosPage() {
           </div>
         )}
       </div>
+
+      <BatchExportModal
+        isOpen={showBatchExport}
+        onClose={() => setShowBatchExport(false)}
+      />
     </MainLayout>
   )
 }
