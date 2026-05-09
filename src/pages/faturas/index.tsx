@@ -52,6 +52,8 @@ export default function FaturasPage() {
   const loadData = async () => {
     try {
       setLoading(true)
+      // Atualiza faturas pendentes vencidas antes de carregar
+      await faturaService.updateOverdue()
       const [clientesData, faturasData] = await Promise.all([
         clienteService.getAll(),
         faturaService.getAll()
@@ -269,6 +271,10 @@ export default function FaturasPage() {
     .filter(f => f.status === 'pago')
     .reduce((acc, f) => acc + f.valor, 0)
 
+  const totalAtrasado = filteredFaturas
+    .filter(f => f.status === 'atrasado')
+    .reduce((acc, f) => acc + f.valor, 0)
+
   if (loading) {
     return (
       <MainLayout>
@@ -376,6 +382,7 @@ export default function FaturasPage() {
                 <option value="todos">Todos os Status</option>
                 <option value="pendente">Pendente</option>
                 <option value="pago">Pago</option>
+                <option value="atrasado">Atrasado</option>
               </select>
             </div>
           </div>
@@ -412,21 +419,26 @@ export default function FaturasPage() {
         </div>
 
         {/* Cards de Resumo */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           <div className="bg-white rounded-lg shadow-md p-6">
             <h3 className="text-lg font-semibold text-gray-700 mb-2">Total de Faturas</h3>
             <p className="text-3xl font-bold text-primary-600">{filteredFaturas.length}</p>
             <p className="text-sm text-gray-600 mt-2">no período selecionado</p>
           </div>
           <div className="bg-white rounded-lg shadow-md p-6">
-            <h3 className="text-lg font-semibold text-gray-700 mb-2">Faturas Pendentes</h3>
+            <h3 className="text-lg font-semibold text-gray-700 mb-2">Pendentes</h3>
             <p className="text-3xl font-bold text-yellow-600">{formatCurrency(totalPendente)}</p>
-            <p className="text-sm text-gray-600 mt-2">aguardando pagamento</p>
+            <p className="text-sm text-gray-600 mt-2">{filteredFaturas.filter(f => f.status === 'pendente').length} fatura(s)</p>
+          </div>
+          <div className="bg-white rounded-lg shadow-md p-6 border-l-4 border-red-500">
+            <h3 className="text-lg font-semibold text-gray-700 mb-2">Atrasadas</h3>
+            <p className="text-3xl font-bold text-red-600">{formatCurrency(totalAtrasado)}</p>
+            <p className="text-sm text-gray-600 mt-2">{filteredFaturas.filter(f => f.status === 'atrasado').length} fatura(s) vencida(s)</p>
           </div>
           <div className="bg-white rounded-lg shadow-md p-6">
-            <h3 className="text-lg font-semibold text-gray-700 mb-2">Faturas Pagas</h3>
+            <h3 className="text-lg font-semibold text-gray-700 mb-2">Pagas</h3>
             <p className="text-3xl font-bold text-green-600">{formatCurrency(totalPago)}</p>
-            <p className="text-sm text-gray-600 mt-2">já recebidas</p>
+            <p className="text-sm text-gray-600 mt-2">{filteredFaturas.filter(f => f.status === 'pago').length} fatura(s)</p>
           </div>
         </div>
 
@@ -481,10 +493,13 @@ export default function FaturasPage() {
                           className={`px-3 py-1 rounded-full text-xs font-bold border-2 transition-colors ${
                             fatura.status === 'pago'
                               ? 'border-green-500 text-green-600 bg-green-50 hover:bg-green-100'
+                              : fatura.status === 'atrasado'
+                              ? 'border-red-500 text-red-600 bg-red-50 hover:bg-red-100'
                               : 'border-yellow-500 text-yellow-600 bg-yellow-50 hover:bg-yellow-100'
                           }`}
+                          title={fatura.status === 'atrasado' ? 'Clique para marcar como pago' : undefined}
                         >
-                          {fatura.status === 'pago' ? '✓ PAGO' : '⏱ PENDENTE'}
+                          {fatura.status === 'pago' ? '✓ PAGO' : fatura.status === 'atrasado' ? '⚠ ATRASADO' : '⏱ PENDENTE'}
                         </button>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-center print:hidden">

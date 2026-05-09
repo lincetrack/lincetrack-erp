@@ -44,7 +44,7 @@ export interface Fatura {
   quantidade_veiculos: number
   data_vencimento: string
   data_emissao: string
-  status: 'pendente' | 'pago'
+  status: 'pendente' | 'pago' | 'atrasado'
   enviado_whatsapp: boolean
   observacoes?: string
   created_at: string

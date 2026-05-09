@@ -114,9 +114,8 @@ export const faturaService = {
     }
   },
 
-  // Toggle status pago/pendente
+  // Toggle status: pago→pendente | pendente→pago | atrasado→pago
   async toggleStatus(id: string): Promise<Fatura> {
-    // Primeiro busca a fatura
     const { data: fatura, error: fetchError } = await supabase
       .from('faturas')
       .select('status')
@@ -128,7 +127,6 @@ export const faturaService = {
       throw fetchError
     }
 
-    // Atualiza o status
     const newStatus = fatura.status === 'pago' ? 'pendente' : 'pago'
     const { data, error } = await supabase
       .from('faturas')
@@ -143,6 +141,24 @@ export const faturaService = {
     }
 
     return data
+  },
+
+  // Marca como "atrasado" todas as faturas pendentes com vencimento anterior a hoje
+  async updateOverdue(): Promise<number> {
+    const today = new Date().toISOString().split('T')[0]
+    const { data, error } = await supabase
+      .from('faturas')
+      .update({ status: 'atrasado' })
+      .eq('status', 'pendente')
+      .lt('data_vencimento', today)
+      .select('id')
+
+    if (error) {
+      console.error('Erro ao atualizar faturas atrasadas:', error)
+      throw error
+    }
+
+    return data?.length || 0
   },
 
   // Marcar como enviado no WhatsApp

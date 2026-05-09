@@ -6,7 +6,7 @@ import { clienteService } from '@/services/clienteService'
 import { faturaService } from '@/services/faturaService'
 import { despesaService } from '@/services/despesaService'
 
-type ReportType = 'faturas' | 'despesas' | 'clientes' | 'financeiro' | 'assistencia'
+type ReportType = 'faturas' | 'despesas' | 'clientes' | 'financeiro' | 'assistencia' | 'inadimplentes'
 
 export default function RelatoriosPage() {
   const [reportType, setReportType] = useState<ReportType | null>(null)
@@ -34,6 +34,7 @@ export default function RelatoriosPage() {
   const loadData = async () => {
     try {
       setLoading(true)
+      await faturaService.updateOverdue()
       const [clientesData, faturasData, despesasData] = await Promise.all([
         clienteService.getAll(),
         faturaService.getAll(),
@@ -615,6 +616,129 @@ export default function RelatoriosPage() {
     )
   }
 
+  const renderInadimplentesReport = () => {
+    const hoje = new Date().toISOString().split('T')[0]
+    const faturasAtrasadas = faturas.filter(f => f.status === 'atrasado')
+
+    // Agrupa por cliente
+    const porCliente: Record<string, {
+      nome: string
+      telefone: string
+      faturas: typeof faturasAtrasadas
+      totalValor: number
+      diasMaxAtraso: number
+    }> = {}
+
+    faturasAtrasadas.forEach(f => {
+      const cliente = clientes.find(c => c.id === f.cliente_id)
+      const diasAtraso = Math.floor(
+        (new Date(hoje).getTime() - new Date(f.data_vencimento).getTime()) / (1000 * 60 * 60 * 24)
+      )
+
+      if (!porCliente[f.cliente_id]) {
+        porCliente[f.cliente_id] = {
+          nome: f.cliente_nome,
+          telefone: cliente?.telefone || '—',
+          faturas: [],
+          totalValor: 0,
+          diasMaxAtraso: 0
+        }
+      }
+      porCliente[f.cliente_id].faturas.push(f)
+      porCliente[f.cliente_id].totalValor += f.valor
+      if (diasAtraso > porCliente[f.cliente_id].diasMaxAtraso) {
+        porCliente[f.cliente_id].diasMaxAtraso = diasAtraso
+      }
+    })
+
+    const listaInadimplentes = Object.values(porCliente)
+      .sort((a, b) => b.diasMaxAtraso - a.diasMaxAtraso)
+
+    const totalGeral = listaInadimplentes.reduce((acc, c) => acc + c.totalValor, 0)
+
+    const faixaCor = (dias: number) => {
+      if (dias <= 15) return 'text-yellow-700 bg-yellow-50'
+      if (dias <= 30) return 'text-orange-700 bg-orange-50'
+      return 'text-red-700 bg-red-50'
+    }
+
+    return (
+      <div className="space-y-6">
+        <div className="hidden print:block mb-4">
+          <h1 className="text-2xl font-bold text-gray-800 mb-2">Relatório de Inadimplência</h1>
+          <p className="text-sm text-gray-600">Gerado em: {new Date().toLocaleDateString('pt-BR')}</p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 print-summary-card">
+          <div className="bg-red-50 border border-red-200 p-4 rounded-lg print-no-break">
+            <p className="text-sm text-gray-600">Clientes Inadimplentes</p>
+            <p className="text-2xl font-bold text-red-700">{listaInadimplentes.length}</p>
+          </div>
+          <div className="bg-red-100 border border-red-300 p-4 rounded-lg print-no-break">
+            <p className="text-sm text-gray-600">Total em Aberto</p>
+            <p className="text-2xl font-bold text-red-800">{formatCurrency(totalGeral)}</p>
+          </div>
+          <div className="bg-orange-50 border border-orange-200 p-4 rounded-lg print-no-break">
+            <p className="text-sm text-gray-600">Faturas Atrasadas</p>
+            <p className="text-2xl font-bold text-orange-700">{faturasAtrasadas.length}</p>
+          </div>
+        </div>
+
+        {listaInadimplentes.length === 0 ? (
+          <div className="text-center py-16 bg-green-50 rounded-lg border border-green-200">
+            <p className="text-4xl mb-3">✅</p>
+            <p className="text-green-700 font-semibold text-lg">Nenhum cliente inadimplente!</p>
+            <p className="text-green-600 text-sm">Todas as faturas estão em dia.</p>
+          </div>
+        ) : (
+          <div className="overflow-x-auto print:overflow-visible">
+            <table className="w-full border-collapse border border-gray-300 print:text-sm">
+              <thead className="bg-gray-100">
+                <tr>
+                  <th className="border border-gray-300 px-4 py-2 text-left">Cliente</th>
+                  <th className="border border-gray-300 px-4 py-2 text-left">Telefone</th>
+                  <th className="border border-gray-300 px-4 py-2 text-center">Faturas</th>
+                  <th className="border border-gray-300 px-4 py-2 text-left">Vencimentos</th>
+                  <th className="border border-gray-300 px-4 py-2 text-center">Dias em Atraso</th>
+                  <th className="border border-gray-300 px-4 py-2 text-right">Total Devido</th>
+                </tr>
+              </thead>
+              <tbody>
+                {listaInadimplentes.map((cliente, idx) => (
+                  <tr key={idx} className={idx % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
+                    <td className="border border-gray-300 px-4 py-2 font-medium">{cliente.nome}</td>
+                    <td className="border border-gray-300 px-4 py-2">{cliente.telefone}</td>
+                    <td className="border border-gray-300 px-4 py-2 text-center">{cliente.faturas.length}</td>
+                    <td className="border border-gray-300 px-4 py-2 text-sm">
+                      {cliente.faturas
+                        .sort((a, b) => a.data_vencimento.localeCompare(b.data_vencimento))
+                        .map(f => formatDate(f.data_vencimento))
+                        .join(', ')}
+                    </td>
+                    <td className="border border-gray-300 px-4 py-2 text-center">
+                      <span className={`px-2 py-1 rounded text-xs font-bold ${faixaCor(cliente.diasMaxAtraso)}`}>
+                        {cliente.diasMaxAtraso} dias
+                      </span>
+                    </td>
+                    <td className="border border-gray-300 px-4 py-2 text-right font-bold text-red-700">
+                      {formatCurrency(cliente.totalValor)}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+              <tfoot className="bg-gray-100 font-bold">
+                <tr>
+                  <td colSpan={5} className="border border-gray-300 px-4 py-2 text-right">Total Geral</td>
+                  <td className="border border-gray-300 px-4 py-2 text-right text-red-700">{formatCurrency(totalGeral)}</td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+        )}
+      </div>
+    )
+  }
+
   if (loading) {
     return (
       <MainLayout>
@@ -679,6 +803,15 @@ export default function RelatoriosPage() {
               <h3 className="text-lg font-semibold text-gray-800 mb-2">Relatório de Assistência Veicular</h3>
               <p className="text-sm text-gray-600">Clientes com Assistência Veicular e placas dos veículos</p>
             </button>
+
+            <button
+              onClick={() => setReportType('inadimplentes')}
+              className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow text-left border-l-4 border-red-500"
+            >
+              <div className="text-4xl mb-4">⚠️</div>
+              <h3 className="text-lg font-semibold text-gray-800 mb-2">Relatório de Inadimplência</h3>
+              <p className="text-sm text-gray-600">Clientes com faturas atrasadas, dias em atraso e valor acumulado</p>
+            </button>
           </div>
         ) : (
           <div className="space-y-6">
@@ -690,6 +823,7 @@ export default function RelatoriosPage() {
                   {reportType === 'clientes' && 'Relatório de Clientes'}
                   {reportType === 'financeiro' && 'Relatório Financeiro Consolidado'}
                   {reportType === 'assistencia' && 'Relatório de Assistência Veicular'}
+                  {reportType === 'inadimplentes' && 'Relatório de Inadimplência'}
                 </h2>
                 <div className="flex gap-2 print:hidden">
                   <button
@@ -735,6 +869,7 @@ export default function RelatoriosPage() {
               {reportType === 'clientes' && renderClientesReport()}
               {reportType === 'financeiro' && renderFinanceiroReport()}
               {reportType === 'assistencia' && renderAssistenciaReport()}
+              {reportType === 'inadimplentes' && renderInadimplentesReport()}
             </div>
           </div>
         )}

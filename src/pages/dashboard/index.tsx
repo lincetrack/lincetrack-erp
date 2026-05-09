@@ -29,6 +29,7 @@ export default function DashboardPage() {
   const loadData = async () => {
     try {
       setLoading(true)
+      await faturaService.updateOverdue()
       const [clientesData, faturasData, despesasData] = await Promise.all([
         clienteService.getAll(),
         faturaService.getAll(),
@@ -51,6 +52,14 @@ export default function DashboardPage() {
   const totalVeiculos = clientes
     .filter(c => c.ativo)
     .reduce((acc, c) => acc + (c.veiculos?.length || 0), 0)
+
+  // Inadimplentes = clientes distintos com pelo menos uma fatura atrasada
+  const clientesInadimplentes = new Set(
+    faturas.filter(f => f.status === 'atrasado').map(f => f.cliente_id)
+  ).size
+  const valorInadimplente = faturas
+    .filter(f => f.status === 'atrasado')
+    .reduce((acc, f) => acc + f.valor, 0)
 
   // Faturas do mês selecionado
   const faturasDoMes = faturas.filter(f => f.data_vencimento.startsWith(selectedMonth))
@@ -115,7 +124,7 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3 md:gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-7 gap-3 md:gap-4">
           <StatsCard
             title="Clientes Ativos"
             value={clientesAtivos.toString()}
@@ -145,6 +154,13 @@ export default function DashboardPage() {
             title="Despesas do Mês"
             value={formatCurrency(despesasMes)}
             icon="💸"
+          />
+          <StatsCard
+            title="Inadimplentes"
+            value={clientesInadimplentes.toString()}
+            icon="⚠️"
+            subtitle={clientesInadimplentes > 0 ? formatCurrency(valorInadimplente) + ' em aberto' : 'Sem atrasos'}
+            highlight={clientesInadimplentes > 0 ? 'red' : 'green'}
           />
         </div>
 
