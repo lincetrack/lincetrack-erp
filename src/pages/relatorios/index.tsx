@@ -6,7 +6,7 @@ import { clienteService } from '@/services/clienteService'
 import { faturaService } from '@/services/faturaService'
 import { despesaService } from '@/services/despesaService'
 
-type ReportType = 'faturas' | 'despesas' | 'clientes' | 'financeiro'
+type ReportType = 'faturas' | 'despesas' | 'clientes' | 'financeiro' | 'assistencia'
 
 export default function RelatoriosPage() {
   const [reportType, setReportType] = useState<ReportType | null>(null)
@@ -445,6 +445,100 @@ export default function RelatoriosPage() {
     )
   }
 
+  const renderAssistenciaReport = () => {
+    const clientesComAssistencia = clientes.filter(c => c.possui_assistencia && c.ativo)
+    const totalVeiculos = clientesComAssistencia.reduce((acc, c) => acc + (c.veiculos?.length || 0), 0)
+
+    return (
+      <div className="space-y-6">
+        <div className="hidden print:block mb-4">
+          <h1 className="text-2xl font-bold text-gray-800 mb-2">Relatório de Assistência Veicular</h1>
+          <p className="text-sm text-gray-600">Data de geração: {new Date().toLocaleDateString('pt-BR')}</p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 print-summary-card">
+          <div className="bg-blue-50 p-4 rounded-lg print-no-break">
+            <p className="text-sm text-gray-600">Clientes com Assistência</p>
+            <p className="text-2xl font-bold text-blue-600">{clientesComAssistencia.length}</p>
+          </div>
+          <div className="bg-indigo-50 p-4 rounded-lg print-no-break">
+            <p className="text-sm text-gray-600">Veículos Cobertos</p>
+            <p className="text-2xl font-bold text-indigo-600">{totalVeiculos}</p>
+          </div>
+        </div>
+
+        {clientesComAssistencia.length === 0 ? (
+          <div className="text-center py-12 text-gray-500">
+            Nenhum cliente ativo com Assistência Veicular cadastrado.
+          </div>
+        ) : (
+          <div className="overflow-x-auto print:overflow-visible">
+            <table className="w-full border-collapse border border-gray-300 print:text-sm">
+              <thead className="bg-gray-100">
+                <tr>
+                  <th className="border border-gray-300 px-4 py-2 text-left">Cliente</th>
+                  <th className="border border-gray-300 px-4 py-2 text-left">Telefone</th>
+                  <th className="border border-gray-300 px-4 py-2 text-left">Cidade / UF</th>
+                  <th className="border border-gray-300 px-4 py-2 text-left">Placa</th>
+                  <th className="border border-gray-300 px-4 py-2 text-left">Veículo</th>
+                  <th className="border border-gray-300 px-4 py-2 text-center">Bloqueio</th>
+                </tr>
+              </thead>
+              <tbody>
+                {clientesComAssistencia.map(cliente =>
+                  cliente.veiculos && cliente.veiculos.length > 0 ? (
+                    cliente.veiculos.map((veiculo, index) => (
+                      <tr key={`${cliente.id}-${veiculo.id}`} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
+                        {index === 0 && (
+                          <>
+                            <td
+                              className="border border-gray-300 px-4 py-2 font-medium"
+                              rowSpan={cliente.veiculos.length}
+                            >
+                              {cliente.nome}
+                            </td>
+                            <td
+                              className="border border-gray-300 px-4 py-2"
+                              rowSpan={cliente.veiculos.length}
+                            >
+                              {cliente.telefone}
+                            </td>
+                            <td
+                              className="border border-gray-300 px-4 py-2"
+                              rowSpan={cliente.veiculos.length}
+                            >
+                              {cliente.cidade} - {cliente.estado}
+                            </td>
+                          </>
+                        )}
+                        <td className="border border-gray-300 px-4 py-2 font-mono font-bold">{veiculo.placa}</td>
+                        <td className="border border-gray-300 px-4 py-2">{veiculo.veiculo}</td>
+                        <td className="border border-gray-300 px-4 py-2 text-center">
+                          {veiculo.com_bloqueio ? (
+                            <span className="px-2 py-1 rounded text-xs bg-orange-100 text-orange-800">SIM</span>
+                          ) : (
+                            <span className="px-2 py-1 rounded text-xs bg-gray-100 text-gray-600">NÃO</span>
+                          )}
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr key={cliente.id}>
+                      <td className="border border-gray-300 px-4 py-2 font-medium">{cliente.nome}</td>
+                      <td className="border border-gray-300 px-4 py-2">{cliente.telefone}</td>
+                      <td className="border border-gray-300 px-4 py-2">{cliente.cidade} - {cliente.estado}</td>
+                      <td className="border border-gray-300 px-4 py-2 text-gray-400 italic" colSpan={3}>Sem veículos cadastrados</td>
+                    </tr>
+                  )
+                )}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+    )
+  }
+
   if (loading) {
     return (
       <MainLayout>
@@ -500,6 +594,15 @@ export default function RelatoriosPage() {
               <h3 className="text-lg font-semibold text-gray-800 mb-2">Relatório Financeiro Consolidado</h3>
               <p className="text-sm text-gray-600">Visão completa: Receitas x Despesas e resultado</p>
             </button>
+
+            <button
+              onClick={() => setReportType('assistencia')}
+              className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow text-left border-l-4 border-blue-500"
+            >
+              <div className="text-4xl mb-4">🛡️</div>
+              <h3 className="text-lg font-semibold text-gray-800 mb-2">Relatório de Assistência Veicular</h3>
+              <p className="text-sm text-gray-600">Clientes com Assistência Veicular e placas dos veículos</p>
+            </button>
           </div>
         ) : (
           <div className="space-y-6">
@@ -510,6 +613,7 @@ export default function RelatoriosPage() {
                   {reportType === 'despesas' && 'Relatório de Despesas'}
                   {reportType === 'clientes' && 'Relatório de Clientes'}
                   {reportType === 'financeiro' && 'Relatório Financeiro Consolidado'}
+                  {reportType === 'assistencia' && 'Relatório de Assistência Veicular'}
                 </h2>
                 <div className="flex gap-2 print:hidden">
                   <button
@@ -554,6 +658,7 @@ export default function RelatoriosPage() {
               {reportType === 'despesas' && renderDespesasReport()}
               {reportType === 'clientes' && renderClientesReport()}
               {reportType === 'financeiro' && renderFinanceiroReport()}
+              {reportType === 'assistencia' && renderAssistenciaReport()}
             </div>
           </div>
         )}

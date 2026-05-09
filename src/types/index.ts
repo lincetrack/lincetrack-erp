@@ -28,6 +28,7 @@ export interface Cliente {
   dia_vencimento: string
   ativo: boolean
   login_plataforma?: string
+  possui_assistencia: boolean
   veiculos: Veiculo[]
   created_at: string
   updated_at: string

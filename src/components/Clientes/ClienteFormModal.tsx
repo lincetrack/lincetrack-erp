@@ -22,6 +22,7 @@ export default function ClienteFormModal({ isOpen, cliente, onClose, onSave }: C
     valor_mensalidade: 79.90,
     dia_vencimento: '10',
     login_plataforma: '',
+    possui_assistencia: false,
     veiculos: [],
     ativo: true
   })
@@ -62,6 +63,7 @@ export default function ClienteFormModal({ isOpen, cliente, onClose, onSave }: C
         valor_mensalidade: 79.90,
         dia_vencimento: '10',
         login_plataforma: '',
+        possui_assistencia: false,
         veiculos: [],
         ativo: true
       })
@@ -112,6 +114,7 @@ export default function ClienteFormModal({ isOpen, cliente, onClose, onSave }: C
       valor_mensalidade: formData.valor_mensalidade!,
       dia_vencimento: formData.dia_vencimento!,
       login_plataforma: formData.login_plataforma,
+      possui_assistencia: formData.possui_assistencia ?? false,
       veiculos: veiculos,
       ativo: formData.ativo!,
       created_at: cliente?.created_at || new Date().toISOString(),

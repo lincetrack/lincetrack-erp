@@ -27,6 +27,7 @@ export default function ClientesPage() {
     valor_mensalidade: 39.90,
     dia_vencimento: '10',
     login_plataforma: '',
+    possui_assistencia: false,
     veiculos: [],
     ativo: true
   })
@@ -96,6 +97,7 @@ export default function ClientesPage() {
         valor_mensalidade: 39.90,
         dia_vencimento: '10',
         login_plataforma: '',
+        possui_assistencia: false,
         veiculos: [],
         ativo: true
       })
@@ -270,16 +272,23 @@ export default function ClientesPage() {
                     <h3 className="text-lg font-bold text-gray-800">{cliente.nome}</h3>
                     <p className="text-sm text-gray-600">CNPJ: {formatCNPJ(cliente.cnpj)}</p>
                   </div>
-                  <button
-                    onClick={() => toggleAtivo(cliente.id)}
-                    className={`px-3 py-1 rounded-full text-xs font-bold ${
-                      cliente.ativo
-                        ? 'bg-green-100 text-green-700'
-                        : 'bg-red-100 text-red-700'
-                    }`}
-                  >
-                    {cliente.ativo ? '✓ ATIVO' : '✕ INATIVO'}
-                  </button>
+                  <div className="flex flex-col items-end gap-1">
+                    <button
+                      onClick={() => toggleAtivo(cliente.id)}
+                      className={`px-3 py-1 rounded-full text-xs font-bold ${
+                        cliente.ativo
+                          ? 'bg-green-100 text-green-700'
+                          : 'bg-red-100 text-red-700'
+                      }`}
+                    >
+                      {cliente.ativo ? '✓ ATIVO' : '✕ INATIVO'}
+                    </button>
+                    {cliente.possui_assistencia && (
+                      <span className="px-2 py-0.5 rounded-full text-xs font-semibold bg-blue-100 text-blue-700">
+                        🛡️ Assistência
+                      </span>
+                    )}
+                  </div>
                 </div>
 
                 <div className="space-y-2 text-sm text-gray-600 mb-4">
@@ -426,6 +435,21 @@ export default function ClientesPage() {
                     className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                     placeholder="usuario.plataforma"
                   />
+                </div>
+
+                <div className="sm:col-span-2">
+                  <label className="flex items-center cursor-pointer gap-3 p-3 border border-blue-200 rounded-lg bg-blue-50 hover:bg-blue-100 transition-colors">
+                    <input
+                      type="checkbox"
+                      checked={editingCliente.possui_assistencia || false}
+                      onChange={(e) => setEditingCliente({ ...editingCliente, possui_assistencia: e.target.checked })}
+                      className="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                    />
+                    <div>
+                      <span className="text-sm font-semibold text-blue-800">🛡️ Possui Assistência Veicular</span>
+                      <p className="text-xs text-blue-600">Marque se este cliente possui o serviço de Assistência Veicular</p>
+                    </div>
+                  </label>
                 </div>
 
                 <div className="sm:col-span-2">
@@ -787,6 +811,21 @@ export default function ClientesPage() {
                   className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                   placeholder="usuario.plataforma"
                 />
+              </div>
+
+              <div className="sm:col-span-2">
+                <label className="flex items-center cursor-pointer gap-3 p-3 border border-blue-200 rounded-lg bg-blue-50 hover:bg-blue-100 transition-colors">
+                  <input
+                    type="checkbox"
+                    checked={newCliente.possui_assistencia || false}
+                    onChange={(e) => setNewCliente({ ...newCliente, possui_assistencia: e.target.checked })}
+                    className="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                  />
+                  <div>
+                    <span className="text-sm font-semibold text-blue-800">🛡️ Possui Assistência Veicular</span>
+                    <p className="text-xs text-blue-600">Marque se este cliente possui o serviço de Assistência Veicular</p>
+                  </div>
+                </label>
               </div>
 
               <div className="sm:col-span-2">
