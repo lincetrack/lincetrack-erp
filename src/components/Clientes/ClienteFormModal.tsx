@@ -79,7 +79,8 @@ export default function ClienteFormModal({ isOpen, cliente, onClose, onSave }: C
       tipo_rastreador: 'GT06N',
       imei: '',
       com_bloqueio: false,
-      numero_chip: ''
+      numero_chip: '',
+      local_ocultacao: ''
     }
     setVeiculos([...veiculos, novoVeiculo])
   }
@@ -418,6 +419,19 @@ export default function ClienteFormModal({ isOpen, cliente, onClose, onSave }: C
                           />
                           <span className="text-sm font-medium text-gray-700">Com Bloqueio?</span>
                         </label>
+                      </div>
+
+                      <div className="md:col-span-3">
+                        <label className="block text-xs font-medium text-gray-700 mb-1">
+                          Local de Ocultação
+                        </label>
+                        <input
+                          type="text"
+                          value={veiculo.local_ocultacao || ''}
+                          onChange={(e) => handleVeiculoChange(veiculo.id, 'local_ocultacao', e.target.value)}
+                          className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-primary-500"
+                          placeholder="Ex: Sob o painel lado motorista"
+                        />
                       </div>
                     </div>
                   </div>

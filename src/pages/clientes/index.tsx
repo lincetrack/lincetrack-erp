@@ -558,7 +558,8 @@ export default function ClientesPage() {
                       tipo_rastreador: 'LV-12 4G USB',
                       imei: '',
                       com_bloqueio: false,
-                      numero_chip: ''
+                      numero_chip: '',
+                      local_ocultacao: ''
                     }
                     setEditingCliente({
                       ...editingCliente,
@@ -677,6 +678,20 @@ export default function ClientesPage() {
                             />
                             <span className="text-xs text-gray-700">Com Bloqueio?</span>
                           </label>
+                        </div>
+                        <div className="col-span-2">
+                          <label className="block text-xs text-gray-600 mb-1">Local de Ocultação</label>
+                          <input
+                            type="text"
+                            value={veiculo.local_ocultacao || ''}
+                            onChange={(e) => {
+                              const novosVeiculos = [...editingCliente.veiculos]
+                              novosVeiculos[index] = { ...veiculo, local_ocultacao: e.target.value }
+                              setEditingCliente({ ...editingCliente, veiculos: novosVeiculos })
+                            }}
+                            className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
+                            placeholder="Ex: Sob o painel lado motorista"
+                          />
                         </div>
                       </div>
                     </div>
@@ -934,7 +949,8 @@ export default function ClientesPage() {
                       tipo_rastreador: 'LV-12 4G USB',
                       imei: '',
                       com_bloqueio: false,
-                      numero_chip: ''
+                      numero_chip: '',
+                      local_ocultacao: ''
                     }
                     setNewCliente({
                       ...newCliente,
@@ -1053,6 +1069,20 @@ export default function ClientesPage() {
                             />
                             <span className="text-xs text-gray-700">Com Bloqueio?</span>
                           </label>
+                        </div>
+                        <div className="col-span-2">
+                          <label className="block text-xs text-gray-600 mb-1">Local de Ocultação</label>
+                          <input
+                            type="text"
+                            value={veiculo.local_ocultacao || ''}
+                            onChange={(e) => {
+                              const novosVeiculos = [...(newCliente.veiculos || [])]
+                              novosVeiculos[index] = { ...veiculo, local_ocultacao: e.target.value }
+                              setNewCliente({ ...newCliente, veiculos: novosVeiculos })
+                            }}
+                            className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
+                            placeholder="Ex: Sob o painel lado motorista"
+                          />
                         </div>
                       </div>
                     </div>

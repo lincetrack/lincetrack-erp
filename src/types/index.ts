@@ -7,6 +7,7 @@ export interface Veiculo {
   imei: string
   com_bloqueio: boolean
   numero_chip: string
+  local_ocultacao?: string
   created_at?: string
   updated_at?: string
 }
