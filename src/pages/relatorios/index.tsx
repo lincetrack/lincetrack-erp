@@ -815,6 +815,21 @@ export default function RelatoriosPage() {
               <h3 className="text-lg font-semibold text-gray-800 mb-2">Relatório de Inadimplência</h3>
               <p className="text-sm text-gray-600">Clientes com faturas atrasadas, dias em atraso e valor acumulado</p>
             </button>
+
+            <a
+              href="/etiqueta-instalacao.html"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow text-left border-l-4 border-orange-400 block"
+            >
+              <div className="text-4xl mb-4">🏷️</div>
+              <h3 className="text-lg font-semibold text-gray-800 mb-2">Etiquetas de Instalação</h3>
+              <p className="text-sm text-gray-600">Imprime fichas de instalação para envio aos instaladores</p>
+              <span className="inline-block mt-3 text-xs font-semibold text-orange-600 bg-orange-50 border border-orange-200 rounded-full px-3 py-1">
+                🖨️ Abre para impressão
+              </span>
+            </a>
+
           </div>
         ) : (
           <div className="space-y-6">
