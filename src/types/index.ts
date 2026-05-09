@@ -30,6 +30,7 @@ export interface Cliente {
   ativo: boolean
   login_plataforma?: string
   possui_assistencia: boolean
+  valor_assistencia?: number
   veiculos: Veiculo[]
   created_at: string
   updated_at: string

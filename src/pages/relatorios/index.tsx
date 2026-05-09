@@ -527,6 +527,7 @@ export default function RelatoriosPage() {
   const renderAssistenciaReport = () => {
     const clientesComAssistencia = clientes.filter(c => c.possui_assistencia && c.ativo)
     const totalVeiculos = clientesComAssistencia.reduce((acc, c) => acc + (c.veiculos?.length || 0), 0)
+    const totalRepasse = clientesComAssistencia.reduce((acc, c) => acc + (c.valor_assistencia || 0), 0)
 
     return (
       <div className="space-y-6">
@@ -535,7 +536,7 @@ export default function RelatoriosPage() {
           <p className="text-sm text-gray-600">Data de geração: {new Date().toLocaleDateString('pt-BR')}</p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 print-summary-card">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 print-summary-card">
           <div className="bg-blue-50 p-4 rounded-lg print-no-break">
             <p className="text-sm text-gray-600">Clientes com Assistência</p>
             <p className="text-2xl font-bold text-blue-600">{clientesComAssistencia.length}</p>
@@ -543,6 +544,10 @@ export default function RelatoriosPage() {
           <div className="bg-indigo-50 p-4 rounded-lg print-no-break">
             <p className="text-sm text-gray-600">Veículos Cobertos</p>
             <p className="text-2xl font-bold text-indigo-600">{totalVeiculos}</p>
+          </div>
+          <div className="bg-green-50 border border-green-200 p-4 rounded-lg print-no-break">
+            <p className="text-sm text-gray-600">Total Repasse Assistência</p>
+            <p className="text-2xl font-bold text-green-700">{formatCurrency(totalRepasse)}</p>
           </div>
         </div>
 
@@ -561,6 +566,7 @@ export default function RelatoriosPage() {
                   <th className="border border-gray-300 px-3 py-2 text-left">Placa</th>
                   <th className="border border-gray-300 px-3 py-2 text-left">Veículo</th>
                   <th className="border border-gray-300 px-3 py-2 text-center">Bloqueio</th>
+                  <th className="hidden sm:table-cell border border-gray-300 px-3 py-2 text-right">Valor Assistência</th>
                 </tr>
               </thead>
               <tbody>
@@ -588,6 +594,12 @@ export default function RelatoriosPage() {
                             >
                               {cliente.cidade} - {cliente.estado}
                             </td>
+                            <td
+                              className="hidden sm:table-cell border border-gray-300 px-3 py-2 text-right font-semibold text-green-700"
+                              rowSpan={cliente.veiculos.length}
+                            >
+                              {cliente.valor_assistencia ? formatCurrency(cliente.valor_assistencia) : '—'}
+                            </td>
                           </>
                         )}
                         <td className="border border-gray-300 px-3 py-2 font-mono font-bold">{veiculo.placa}</td>
@@ -607,10 +619,26 @@ export default function RelatoriosPage() {
                       <td className="hidden md:table-cell border border-gray-300 px-3 py-2">{cliente.telefone}</td>
                       <td className="hidden sm:table-cell border border-gray-300 px-3 py-2">{cliente.cidade} - {cliente.estado}</td>
                       <td className="border border-gray-300 px-3 py-2 text-gray-400 italic" colSpan={3}>Sem veículos cadastrados</td>
+                      <td className="hidden sm:table-cell border border-gray-300 px-3 py-2 text-right font-semibold text-green-700">
+                        {cliente.valor_assistencia ? formatCurrency(cliente.valor_assistencia) : '—'}
+                      </td>
                     </tr>
                   )
                 )}
               </tbody>
+              <tfoot className="bg-green-50">
+                <tr>
+                  <td colSpan={3} className="border border-gray-300 px-3 py-2 font-bold text-right hidden sm:table-cell">
+                    Total Repasse
+                  </td>
+                  <td colSpan={3} className="border border-gray-300 px-3 py-2 font-bold text-right sm:hidden">
+                    Total Repasse
+                  </td>
+                  <td className="hidden sm:table-cell border border-gray-300 px-3 py-2 text-right font-bold text-green-800 text-base">
+                    {formatCurrency(totalRepasse)}
+                  </td>
+                </tr>
+              </tfoot>
             </table>
           </div>
         )}

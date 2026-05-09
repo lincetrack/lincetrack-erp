@@ -452,6 +452,24 @@ export default function ClientesPage() {
                   </label>
                 </div>
 
+                {editingCliente.possui_assistencia && (
+                  <div>
+                    <label className="block text-sm font-medium text-blue-800 mb-1">
+                      💰 Valor da Assistência (R$)
+                    </label>
+                    <input
+                      type="number"
+                      step="0.01"
+                      min="0"
+                      value={editingCliente.valor_assistencia || ''}
+                      onChange={(e) => setEditingCliente({ ...editingCliente, valor_assistencia: parseFloat(e.target.value) || 0 })}
+                      className="w-full px-3 py-2 text-sm border border-blue-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-blue-50"
+                      placeholder="0,00"
+                    />
+                    <p className="text-xs text-blue-600 mt-1">Valor de repasse para assistência veicular</p>
+                  </div>
+                )}
+
                 <div className="sm:col-span-2">
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     Endereço *
@@ -842,6 +860,24 @@ export default function ClientesPage() {
                   </div>
                 </label>
               </div>
+
+              {newCliente.possui_assistencia && (
+                <div>
+                  <label className="block text-sm font-medium text-blue-800 mb-1">
+                    💰 Valor da Assistência (R$)
+                  </label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    value={newCliente.valor_assistencia || ''}
+                    onChange={(e) => setNewCliente({ ...newCliente, valor_assistencia: parseFloat(e.target.value) || 0 })}
+                    className="w-full px-3 py-2 text-sm border border-blue-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-blue-50"
+                    placeholder="0,00"
+                  />
+                  <p className="text-xs text-blue-600 mt-1">Valor de repasse para assistência veicular</p>
+                </div>
+              )}
 
               <div className="sm:col-span-2">
                 <label className="block text-sm font-medium text-gray-700 mb-1">
