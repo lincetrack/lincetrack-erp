@@ -4,6 +4,7 @@ import { Contrato, Cliente } from '@/types'
 import { formatCurrency, formatDate } from '@/utils/formatters'
 import { contratoService } from '@/services/contratoService'
 import { clienteService } from '@/services/clienteService'
+import { supabase } from '@/lib/supabase'
 import ContratoFormModal from '@/components/Contratos/ContratoFormModal'
 import ContratoViewModal from '@/components/Contratos/ContratoViewModal'
 
@@ -25,6 +26,76 @@ function diasParaVencer(dataVenc: string): number {
   return Math.ceil((venc.getTime() - hoje.getTime()) / (1000 * 60 * 60 * 24))
 }
 
+interface DeleteModalProps {
+  contrato: Contrato
+  onConfirm: (password: string) => Promise<void>
+  onClose: () => void
+}
+
+function DeleteModal({ contrato, onConfirm, onClose }: DeleteModalProps) {
+  const [password, setPassword] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [erro, setErro] = useState<string | null>(null)
+
+  const handleConfirm = async () => {
+    if (!password) { setErro('Informe a senha.'); return }
+    setLoading(true)
+    setErro(null)
+    try {
+      await onConfirm(password)
+    } catch (err: unknown) {
+      setErro(err instanceof Error ? err.message : 'Senha incorreta ou erro ao excluir.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return (
+    <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
+      <div className="bg-white rounded-lg shadow-xl w-full max-w-sm p-6">
+        <h2 className="text-lg font-bold text-gray-800 mb-2">🗑️ Excluir Contrato</h2>
+        <p className="text-sm text-gray-600 mb-1">
+          Você está prestes a excluir permanentemente o contrato de:
+        </p>
+        <p className="text-sm font-semibold text-red-700 mb-4">
+          #{contrato.numero_contrato} — {contrato.cliente_nome}
+        </p>
+        <p className="text-sm text-gray-600 mb-3">
+          Confirme sua senha de acesso ao sistema para continuar:
+        </p>
+        <input
+          type="password"
+          placeholder="Sua senha"
+          value={password}
+          onChange={e => setPassword(e.target.value)}
+          onKeyDown={e => e.key === 'Enter' && handleConfirm()}
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-red-500 mb-3"
+          autoFocus
+        />
+        {erro && (
+          <p className="text-sm text-red-600 mb-3">⚠️ {erro}</p>
+        )}
+        <div className="flex gap-3">
+          <button
+            onClick={onClose}
+            disabled={loading}
+            className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 text-sm disabled:opacity-50"
+          >
+            Cancelar
+          </button>
+          <button
+            onClick={handleConfirm}
+            disabled={loading || !password}
+            className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {loading ? '⏳ Verificando...' : '🗑️ Excluir'}
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export default function ContratosPage() {
   const [contratos, setContratos] = useState<Contrato[]>([])
   const [clientes, setClientes] = useState<Cliente[]>([])
@@ -33,7 +104,9 @@ export default function ContratosPage() {
   const [search, setSearch] = useState('')
   const [showForm, setShowForm] = useState(false)
   const [viewContrato, setViewContrato] = useState<Contrato | null>(null)
+  const [deleteContrato, setDeleteContrato] = useState<Contrato | null>(null)
   const [notification, setNotification] = useState<string | null>(null)
+  const [notificationType, setNotificationType] = useState<'success' | 'error'>('success')
 
   useEffect(() => { loadData() }, [])
 
@@ -54,8 +127,9 @@ export default function ContratosPage() {
     }
   }
 
-  const showMsg = (msg: string) => {
+  const showMsg = (msg: string, type: 'success' | 'error' = 'success') => {
     setNotification(msg)
+    setNotificationType(type)
     setTimeout(() => setNotification(null), 3000)
   }
 
@@ -72,8 +146,37 @@ export default function ContratosPage() {
       await loadData()
       showMsg('Contrato rescindido.')
     } catch {
-      showMsg('Erro ao rescindir contrato.')
+      showMsg('Erro ao rescindir contrato.', 'error')
     }
+  }
+
+  const handleToggleAssinado = async (contrato: Contrato) => {
+    try {
+      await contratoService.updateAssinado(contrato.id, !contrato.assinado)
+      setContratos(prev => prev.map(c =>
+        c.id === contrato.id ? { ...c, assinado: !c.assinado } : c
+      ))
+    } catch {
+      showMsg('Erro ao atualizar status de assinatura.', 'error')
+    }
+  }
+
+  const handleDelete = async (password: string) => {
+    if (!deleteContrato) return
+
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user?.email) throw new Error('Usuário não autenticado.')
+
+    const { error: authError } = await supabase.auth.signInWithPassword({
+      email: user.email,
+      password
+    })
+    if (authError) throw new Error('Senha incorreta.')
+
+    await contratoService.delete(deleteContrato.id)
+    setDeleteContrato(null)
+    await loadData()
+    showMsg('Contrato excluído com sucesso.')
   }
 
   const hoje = new Date().toISOString().split('T')[0]
@@ -85,10 +188,8 @@ export default function ContratosPage() {
     return matchStatus && matchSearch
   })
 
-  // Resumo
   const totalAtivos = contratos.filter(c => c.status === 'ativo').length
   const totalVencidos = contratos.filter(c => c.status === 'vencido').length
-  const totalRescindidos = contratos.filter(c => c.status === 'rescindido').length
   const aVencer30 = contratos.filter(c => {
     if (c.status !== 'ativo') return false
     const dias = diasParaVencer(c.data_vencimento)
@@ -98,7 +199,7 @@ export default function ContratosPage() {
   return (
     <MainLayout>
       {notification && (
-        <div className="fixed top-4 right-4 z-50 bg-green-600 text-white px-4 py-3 rounded-lg shadow-lg text-sm font-medium">
+        <div className={`fixed top-4 right-4 z-50 px-4 py-3 rounded-lg shadow-lg text-sm font-medium text-white ${notificationType === 'error' ? 'bg-red-600' : 'bg-green-600'}`}>
           {notification}
         </div>
       )}
@@ -177,6 +278,7 @@ export default function ContratosPage() {
                     <th className="px-4 py-3 text-center font-semibold text-gray-700">Vencimento</th>
                     <th className="hidden sm:table-cell px-4 py-3 text-right font-semibold text-gray-700">Valor/mês</th>
                     <th className="px-4 py-3 text-center font-semibold text-gray-700">Status</th>
+                    <th className="px-4 py-3 text-center font-semibold text-gray-700">Assinado</th>
                     <th className="px-4 py-3 text-center font-semibold text-gray-700">Ações</th>
                   </tr>
                 </thead>
@@ -208,7 +310,20 @@ export default function ContratosPage() {
                           </span>
                         </td>
                         <td className="px-4 py-3 text-center">
-                          <div className="flex items-center justify-center gap-2">
+                          <label className="flex items-center justify-center gap-1.5 cursor-pointer group" title={c.assinado ? 'Contrato assinado' : 'Marcar como assinado'}>
+                            <input
+                              type="checkbox"
+                              checked={c.assinado || false}
+                              onChange={() => handleToggleAssinado(c)}
+                              className="w-4 h-4 rounded border-gray-300 text-green-600 focus:ring-green-500 cursor-pointer"
+                            />
+                            <span className={`text-xs font-medium ${c.assinado ? 'text-green-700' : 'text-gray-400'}`}>
+                              {c.assinado ? '✓ Sim' : 'Não'}
+                            </span>
+                          </label>
+                        </td>
+                        <td className="px-4 py-3 text-center">
+                          <div className="flex items-center justify-center gap-1.5">
                             <button
                               onClick={() => setViewContrato(c)}
                               className="px-3 py-1.5 text-xs bg-primary-600 text-white rounded hover:bg-primary-700 font-medium"
@@ -219,12 +334,19 @@ export default function ContratosPage() {
                             {c.status === 'ativo' && (
                               <button
                                 onClick={() => handleRescindir(c)}
-                                className="px-3 py-1.5 text-xs bg-red-100 text-red-700 rounded hover:bg-red-200 font-medium"
+                                className="px-2 py-1.5 text-xs bg-orange-100 text-orange-700 rounded hover:bg-orange-200 font-medium"
                                 title="Rescindir contrato"
                               >
                                 ✕
                               </button>
                             )}
+                            <button
+                              onClick={() => setDeleteContrato(c)}
+                              className="px-2 py-1.5 text-xs bg-red-100 text-red-700 rounded hover:bg-red-200 font-medium"
+                              title="Excluir contrato"
+                            >
+                              🗑️
+                            </button>
                           </div>
                         </td>
                       </tr>
@@ -248,6 +370,14 @@ export default function ContratosPage() {
         contrato={viewContrato}
         onClose={() => setViewContrato(null)}
       />
+
+      {deleteContrato && (
+        <DeleteModal
+          contrato={deleteContrato}
+          onConfirm={handleDelete}
+          onClose={() => setDeleteContrato(null)}
+        />
+      )}
     </MainLayout>
   )
 }

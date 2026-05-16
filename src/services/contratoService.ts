@@ -29,6 +29,14 @@ export const contratoService = {
     if (error) throw error
   },
 
+  async updateAssinado(id: string, assinado: boolean): Promise<void> {
+    const { error } = await supabase
+      .from('contratos')
+      .update({ assinado, updated_at: new Date().toISOString() })
+      .eq('id', id)
+    if (error) throw error
+  },
+
   async delete(id: string): Promise<void> {
     const { error } = await supabase
       .from('contratos')

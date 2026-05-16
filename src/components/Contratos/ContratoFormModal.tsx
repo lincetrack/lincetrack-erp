@@ -79,7 +79,8 @@ export default function ContratoFormModal({ isOpen, clientes, onClose, onSave }:
         qtd_veiculos_assistencia: temAssistencia ? qtdVeiculosAssistencia : undefined,
         data_contrato: hoje,
         data_vencimento: dataVencimento,
-        status: 'ativo'
+        status: 'ativo',
+        assinado: false
       })
       onClose()
     } catch {

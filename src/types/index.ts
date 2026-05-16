@@ -92,6 +92,7 @@ export interface Contrato {
   data_contrato: string
   data_vencimento: string
   status: 'ativo' | 'vencido' | 'rescindido'
+  assinado: boolean
   created_at: string
   updated_at: string
 }
