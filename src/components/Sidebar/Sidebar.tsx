@@ -7,6 +7,7 @@ const menuItems = [
   { name: 'Faturas', path: '/faturas', icon: '💵' },
   { name: 'Despesas', path: '/despesas', icon: '💸' },
   { name: 'Clientes', path: '/clientes', icon: '👥' },
+  { name: 'Contratos', path: '/contratos', icon: '📝' },
   { name: 'Aniversariantes', path: '/aniversariantes', icon: '🎂' },
   { name: 'Propostas', path: '/propostas', icon: '📋' },
   { name: 'Relatórios', path: '/relatorios', icon: '📈' },

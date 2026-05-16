@@ -75,6 +75,27 @@ export interface Usuario {
   created_at: string
 }
 
+export interface Contrato {
+  id: string
+  numero_contrato: number
+  cliente_id?: string
+  cliente_nome: string
+  cliente_cnpj: string
+  cliente_endereco?: string
+  cliente_bairro?: string
+  cliente_cidade: string
+  cliente_estado: string
+  valor_mensalidade: number
+  qtd_veiculos: number
+  valor_assistencia?: number
+  qtd_veiculos_assistencia?: number
+  data_contrato: string
+  data_vencimento: string
+  status: 'ativo' | 'vencido' | 'rescindido'
+  created_at: string
+  updated_at: string
+}
+
 export interface PropostaComercial {
   id: string
   numero_proposta: number
