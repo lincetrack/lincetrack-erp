@@ -76,19 +76,41 @@ export default function ContratoViewModal({ contrato, onClose }: ContratoViewMod
     <>
       <style jsx global>{`
         @media print {
+          @page { size: A4 portrait; margin: 15mm; }
+
           body * { visibility: hidden; }
-          #contrato-print-content, #contrato-print-content * { visibility: visible; }
-          #contrato-print-content {
-            position: absolute; left: 0; top: 0;
-            width: 100%; background: white;
-            padding: 40px 60px; margin: 0; box-shadow: none;
+
+          /* Remove as restrições de altura/overflow do overlay e do wrapper */
+          #contrato-overlay {
+            visibility: visible !important;
+            position: static !important;
+            background: none !important;
+            overflow: visible !important;
+            height: auto !important;
+            max-height: none !important;
+            display: block !important;
+            padding: 0 !important;
           }
+
+          /* Remove height clipping do container scrollável */
+          #contrato-print-content {
+            visibility: visible !important;
+            position: static !important;
+            max-height: none !important;
+            overflow: visible !important;
+            box-shadow: none !important;
+            padding: 15mm !important;
+            margin: 0 auto !important;
+            max-width: 100% !important;
+            width: 100% !important;
+          }
+
+          #contrato-print-content * { visibility: visible !important; }
           .print-hide { display: none !important; }
-          @page { size: A4 portrait; margin: 20mm; }
         }
       `}</style>
 
-      <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-2 sm:p-4 overflow-y-auto">
+      <div id="contrato-overlay" className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-2 sm:p-4 overflow-y-auto">
         <div
           id="contrato-print-content"
           className="bg-white w-full max-w-4xl max-h-[95vh] overflow-y-auto my-4 p-8 shadow-2xl relative font-sans text-gray-900"
